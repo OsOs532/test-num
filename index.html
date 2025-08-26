@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NUMBER LOOKUP</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <canvas id="matrix"></canvas>
+  <header> ☠️ Os_Os NUMBER LOOKUP ☠️ </header>
+
+  <div class="card">
+    <div id="instructions">
+      <h3>📋 تعليمات الاستخدام</h3>
+      <ul>
+        <li>ادخل الرقم بدون مفتاح الدولة للتعرف على الرقم</li>
+        <li>ادخل مفتاح الدولة للتعرف على اسم الدولة</li>
+        <li>البيانات يتم جلبها تلقائيًا من قاعدة البيانات</li>
+      </ul>
+    </div>
+    
+    <div id="countryFlag" class="country-flag"></div>
+    <input id="numberInput" type="text" placeholder="Enter number please">
+    <button id="searchButton">🔎 Search</button>
+    
+    <div id="loaderContainer" class="loader-container">
+      <div class="loader"></div>
+      <div class="loader-text">Searching database...</div>
+    </div>
+    
+    <div id="result"></div>
+  </div>
+
+  <footer>
+    <div class="socials">
+      <a href="https://www.instagram.com/o_s_o_s_202/" target="_blank" rel="noopener noreferrer">
+        <img src="https://cdn-icons-png.flaticon.com/512/2111/2111463.png" alt="Instagram"> Instagram
+      </a>
+      <a href="https://www.facebook.com/profile.php?id=100033771226713" target="_blank" rel="noopener noreferrer">
+        <img src="https://cdn-icons-png.flaticon.com/512/733/733547.png" alt="Facebook"> Facebook
+      </a>
+    </div>
+
+    <div class="profile-pic">
+      <img src="profile.jpg" alt="Profile Picture">
+    </div>
+
+    <p class="footer-text">
+      All rights reserved © Mohamed Osama
+    </p>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>
