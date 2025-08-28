@@ -3,7 +3,6 @@
 // ========================
 const audio = new Audio('العالمي.mp3');
 audio.loop = true;
-
 document.getElementById('playAudioBtn').addEventListener('click', () => {
   audio.play().catch(e => console.log('Autoplay blocked:', e));
 });
@@ -22,7 +21,6 @@ function initMatrix() {
   const fontSize = 14;
   const columns = canvas.width / fontSize;
   const drops = [];
-
   for (let x = 0; x < columns; x++) drops[x] = 1;
 
   function draw() {
@@ -34,14 +32,20 @@ function initMatrix() {
     for (let i = 0; i < drops.length; i++) {
       const text = letters.charAt(Math.floor(Math.random() * letters.length));
       ctx.fillText(text, i * fontSize, drops[i] * fontSize);
-
       if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) drops[i] = 0;
       drops[i]++;
     }
   }
-
   setInterval(draw, 35);
 }
+
+// ========================
+// Toggle instructions
+// ========================
+document.getElementById("toggleInstructions").addEventListener("click", () => {
+  const instructions = document.getElementById("instructions");
+  instructions.style.display = (instructions.style.display === "none" || instructions.style.display === "") ? "block" : "none";
+});
 
 // ========================
 // Handle Enter key press
@@ -91,10 +95,8 @@ function displayCountryFlag(countryCode) {
 function toggleLoader(show) {
   const loaderContainer = document.getElementById("loaderContainer");
   const resultDiv = document.getElementById("result");
-  if (show) {
-    loaderContainer.style.display = "block";
-    resultDiv.innerHTML = "";
-  } else loaderContainer.style.display = "none";
+  loaderContainer.style.display = show ? "block" : "none";
+  if (show) resultDiv.innerHTML = "";
 }
 
 // ========================
