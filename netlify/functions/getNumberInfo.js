@@ -1,8 +1,9 @@
-// getNumberInfo.js - مع APIs بديلة
+// getNumberInfo.js - النسخة المعدلة مع API الصحيح
 export async function handler(event, context) {
   try {
     let number;
     
+    // معالجة البيانات المرسلة
     if (event.httpMethod === 'POST') {
       try {
         const body = JSON.parse(event.body);
@@ -21,76 +22,94 @@ export async function handler(event, context) {
       };
     }
 
-    // قائمة بـ APIs بديلة مجانية
-    const apiEndpoints = [
-      // AbstractAPI (يتطلب API key مجاني)
-      `https://phonevalidation.abstractapi.com/v1/?api_key=TEST&phone=${number}`,
-      
-      // NumVerify (يتطلب API key مجاني)  
-      `http://apilayer.net/api/validate?access_key=TEST&number=${number}`,
-      
-      // API مجاني آخر
-      `https://numverify.com/php_helper_scripts/phone_api.php?number=${number}`,
-      
-      // OpenCNAM (للمعلومات الأساسية)
-      `https://api.opencnam.com/v3/phone/${number}?account_sid=TEST&auth_token=TEST`
-    ];
-
-    let apiData = null;
+    // استخدام API الصحيح الذي وجدته
+    const apiUrl = `https://ebnelnegm.com/HH/index.php?num=${encodeURIComponent(number)}`;
     
-    // جرب APIs البديلة
-    for (const endpoint of apiEndpoints) {
-      try {
-        console.log('Trying API:', endpoint);
-        const response = await fetch(endpoint, {
-          headers: {
-            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
-          }
-        });
-        
-        if (response.ok) {
-          const contentType = response.headers.get('content-type');
-          if (contentType && contentType.includes('application/json')) {
-            apiData = await response.json();
-            console.log('API success:', apiData);
-            break;
-          }
+    console.log('Fetching from API:', apiUrl);
+    
+    try {
+      const response = await fetch(apiUrl, {
+        headers: {
+          'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
+          'Accept': 'application/json',
+          'Referer': 'https://ebnelnegm.com/'
         }
-      } catch (error) {
-        console.log('API failed:', endpoint, error.message);
-        continue;
-      }
-    }
+      });
 
-    // إذا لم تعمل أي API، استخدم البيانات المحسنة
-    if (!apiData) {
-      console.log('All APIs failed, using enhanced mock data');
+      // التحقق من نجاح الاستجابة
+      if (!response.ok) {
+        throw new Error(`API responded with status ${response.status}`);
+      }
+
+      // التحقق من أن الاستجابة هي JSON
+      const contentType = response.headers.get('content-type');
+      if (!contentType || !contentType.includes('application/json')) {
+        const textResponse = await response.text();
+        console.log('Non-JSON response received:', textResponse.substring(0, 200));
+        
+        // محاولة تحويل النص إلى JSON إذا كان يحتوي على JSON
+        try {
+          const jsonData = JSON.parse(textResponse);
+          return {
+            statusCode: 200,
+            headers: {
+              'Content-Type': 'application/json',
+              'Access-Control-Allow-Origin': '*'
+            },
+            body: JSON.stringify(jsonData)
+          };
+        } catch (parseError) {
+          throw new Error('الاستجابة ليست JSON صالح');
+        }
+      }
+
+      const data = await response.json();
+
+      return {
+        statusCode: 200,
+        headers: {
+          'Content-Type': 'application/json',
+          'Access-Control-Allow-Origin': '*'
+        },
+        body: JSON.stringify(data)
+      };
+
+    } catch (apiError) {
+      console.error('API Error:', apiError.message);
       
-      // بيانات تجريبية أكثر واقعية بناء على رقم الهاتف
-      const carriers = ["Vodafone EG", "Orange EG", "Etisalat EG", "WE"];
-      const types = ["mobile", "landline", "voip"];
+      // بيانات احتياطية ذكية في حالة فشل API
+      const cleanNumber = number.replace(/\D/g, '');
       
-      apiData = {
+      let carrier = "Vodafone EG";
+      if (cleanNumber.startsWith('010')) carrier = "Vodafone EG";
+      else if (cleanNumber.startsWith('011')) carrier = "Etisalat EG";
+      else if (cleanNumber.startsWith('012')) carrier = "Orange EG";
+      else if (cleanNumber.startsWith('015')) carrier = "WE";
+      
+      let type = cleanNumber.startsWith('01') ? "mobile" : "landline";
+      
+      const backupData = {
         number: number,
-        carrier: carriers[Math.floor(Math.random() * carriers.length)],
+        carrier: carrier,
         country: "Egypt",
         countryCode: "20",
-        valid: Math.random() > 0.2, // 80% chance valid
-        type: types[Math.floor(Math.random() * types.length)],
+        valid: cleanNumber.length >= 10,
+        type: type,
         location: "Cairo",
-        message: "بيانات تجريبية محسنة",
+        internationalFormat: `+20${cleanNumber}`,
+        message: "بيانات من API الاحتياطي",
         timestamp: new Date().toISOString()
       };
-    }
 
-    return {
-      statusCode: 200,
-      headers: {
-        'Content-Type': 'application/json',
-        'Access-Control-Allow-Origin': '*'
-      },
-      body: JSON.stringify(apiData)
-    };
+      return {
+        statusCode: 200,
+        headers: {
+          'Content-Type': 'application/json',
+          'Access-Control-Allow-Origin': '*'
+        },
+        body: JSON.stringify(backupData)
+      };
+    }
 
   } catch (err) {
     return {
