@@ -31,12 +31,10 @@ function initMatrix() {
   setInterval(draw, 35);
 }
 
-// Handle Enter key press
 function handleKeyPress(event) {
   if (event.key === "Enter") getInfo();
 }
 
-// Country codes mapping
 const countryCodes = {
   "20": "eg", "966": "sa", "971": "ae", "962": "jo", "973": "bh",
   "964": "iq", "965": "kw", "968": "om", "974": "qa", "963": "sy",
@@ -44,7 +42,6 @@ const countryCodes = {
   "249": "sd", "253": "dj", "252": "so", "222": "mr"
 };
 
-// Extract country code from phone number
 function extractCountryCode(phoneNumber) {
   const cleanedNumber = phoneNumber.replace(/\D/g, "");
   for (const code in countryCodes) {
@@ -53,7 +50,6 @@ function extractCountryCode(phoneNumber) {
   return null;
 }
 
-// Display country flag
 function displayCountryFlag(countryCode) {
   const flagElement = document.getElementById("countryFlag");
   if (countryCode && countryCodes[countryCode]) {
@@ -65,7 +61,6 @@ function displayCountryFlag(countryCode) {
   } else flagElement.style.display = "none";
 }
 
-// Loading bar control
 function toggleLoader(show) {
   const loaderContainer = document.getElementById("loaderContainer");
   const resultDiv = document.getElementById("result");
@@ -75,7 +70,6 @@ function toggleLoader(show) {
   } else loaderContainer.style.display = "none";
 }
 
-// Get number info via external API
 async function getInfo() {
   const nu = document.getElementById("numberInput").value.trim();
   if (!nu) {
@@ -89,7 +83,8 @@ async function getInfo() {
   try {
     toggleLoader(true);
 
-    const res = await fetch(`https://ebnelnegm.com/h.php?num=${nu}`);
+    const res = await fetch(`/.netlify/functions/fetchNumberInfo?num=${encodeURIComponent(nu)}`);
+
     if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
 
     const data = await res.json();
@@ -100,11 +95,10 @@ async function getInfo() {
   } catch (e) {
     toggleLoader(false);
     console.error(e);
-    document.getElementById("result").innerHTML = "❌ Error fetching data! المصدر الخارجي غير متاح أو الرقم غير موجود.";
+    document.getElementById("result").innerHTML = "❌ Error fetching data! The external source is unavailable or the number does not exist.";
   }
 }
 
-// Initialize application
 document.addEventListener("DOMContentLoaded", function () {
   initMatrix();
   document.getElementById("numberInput").addEventListener("keypress", handleKeyPress);
