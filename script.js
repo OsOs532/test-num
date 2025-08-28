@@ -1,10 +1,11 @@
-// الموسيقى الخلفية
-const audio = new Audio('العالمي.mp3'); // تم تعديل اسم الملف
+// الصوت الخلفي
+const audio = new Audio('العالمي.mp3');
 audio.loop = true;
 
 let audioStarted = false;
 
-document.addEventListener('click', () => {
+// تشغيل الصوت عند أول ضغطة على زر البحث
+document.getElementById('searchButton').addEventListener('click', () => {
   if (!audioStarted) {
     audio.play().catch(e => console.log('Autoplay blocked:', e));
     audioStarted = true;
