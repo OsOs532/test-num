@@ -1,17 +1,12 @@
 // ========================
 // الموسيقى الخلفية
 // ========================
-const audio = document.createElement('audio');
-audio.src = 'العالمي.mp3'; // تأكد من أن الملف موجود بنفس المجلد
+const audio = new Audio('العالمي.mp3');
 audio.loop = true;
 
-function startAudio() {
+document.getElementById('playAudioBtn').addEventListener('click', () => {
   audio.play().catch(e => console.log('Autoplay blocked:', e));
-  document.removeEventListener('click', startAudio);
-}
-
-// تشغيل الصوت عند أول نقرة
-document.addEventListener('click', startAudio);
+});
 
 // ========================
 // Matrix animation
@@ -103,7 +98,7 @@ function toggleLoader(show) {
 }
 
 // ========================
-// Get number info (Netlify function)
+// Get number info
 // ========================
 async function getInfo() {
   const nu = document.getElementById("numberInput").value.trim();
@@ -137,7 +132,7 @@ async function getInfo() {
 }
 
 // ========================
-// Initialize application
+// Initialize
 // ========================
 document.addEventListener("DOMContentLoaded", function () {
   initMatrix();
