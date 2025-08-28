@@ -1,5 +1,5 @@
-// Matrix animation
-const audio = new Audio('background.mp3');
+// الموسيقى الخلفية
+const audio = new Audio('العالمي.mp3'); // تم تعديل اسم الملف
 audio.loop = true;
 
 let audioStarted = false;
@@ -10,6 +10,8 @@ document.addEventListener('click', () => {
     audioStarted = true;
   }
 });
+
+// Matrix animation
 const canvas = document.getElementById("matrix");
 const ctx = canvas.getContext("2d");
 
