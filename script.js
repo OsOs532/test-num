@@ -75,7 +75,7 @@ function toggleLoader(show) {
   } else loaderContainer.style.display = "none";
 }
 
-// Get number info directly from external API
+// Get number info via API
 async function getInfo() {
   const nu = document.getElementById("numberInput").value.trim();
   if (!nu) {
@@ -89,8 +89,12 @@ async function getInfo() {
   try {
     toggleLoader(true);
 
-    // طلب مباشر للـ API الخارجي
+    // الطلب مباشرة للـ API الخارجي
     const res = await fetch(`https://ebnelnegm.com/h.php?num=${nu}`);
+    
+    // تحقق من حالة الاستجابة
+    if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
+
     const data = await res.json();
 
     toggleLoader(false);
@@ -99,7 +103,7 @@ async function getInfo() {
   } catch (e) {
     toggleLoader(false);
     console.error(e);
-    document.getElementById("result").innerHTML = "❌ Error fetching data!";
+    document.getElementById("result").innerHTML = "❌ Error fetching data! المصدر الخارجي غير متاح أو الرقم غير موجود.";
   }
 }
 
