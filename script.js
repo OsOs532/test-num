@@ -75,7 +75,7 @@ function toggleLoader(show) {
   } else loaderContainer.style.display = "none";
 }
 
-// Get number info via Netlify Function (GET request)
+// Get number info directly via external API
 async function getInfo() {
   const nu = document.getElementById("numberInput").value.trim();
   if (!nu) {
@@ -89,17 +89,9 @@ async function getInfo() {
   try {
     toggleLoader(true);
 
-    // Use GET with query parameter instead of POST
-    const res = await fetch(`/.netlify/functions/getNumberInfo?num=${nu}`);
-    const text = await res.text();
-    let data;
-    try {
-      data = JSON.parse(text);
-    } catch {
-      toggleLoader(false);
-      document.getElementById("result").innerHTML = `❌ Error fetching data! \n${text}`;
-      return;
-    }
+    // Fetch directly من الرابط الخارجي
+    const res = await fetch(`https://ebnelnegm.com/h.php?num=${nu}`);
+    const data = await res.json();
 
     toggleLoader(false);
     document.getElementById("result").innerHTML = JSON.stringify(data, null, 2);
