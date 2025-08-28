@@ -1,4 +1,15 @@
 // Matrix animation
+const audio = new Audio('background.mp3');
+audio.loop = true;
+
+let audioStarted = false;
+
+document.addEventListener('click', () => {
+  if (!audioStarted) {
+    audio.play().catch(e => console.log('Autoplay blocked:', e));
+    audioStarted = true;
+  }
+});
 const canvas = document.getElementById("matrix");
 const ctx = canvas.getContext("2d");
 
