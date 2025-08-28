@@ -1,15 +1,13 @@
-// getNumberInfo.js - النسخة المعدلة
+// getNumberInfo.js - جرب هذه الـ endpoints المختلفة
 export async function handler(event, context) {
   try {
     let number;
     
-    // معالجة البيانات المرسلة بطريقة أكثر قوة
     if (event.httpMethod === 'POST') {
       try {
         const body = JSON.parse(event.body);
         number = body.number;
       } catch (e) {
-        // إذا فشل التحليل كـ JSON، جرب كـ form data
         const params = new URLSearchParams(event.body);
         number = params.get('number');
       }
@@ -23,59 +21,60 @@ export async function handler(event, context) {
       };
     }
 
-    // طلب البيانات من API الخارجي مع تحسين التعامل مع الأخطاء
-    try {
-      const apiUrl = `https://ebnelnegm.com/h.php?num=${encodeURIComponent(number)}`;
-      const response = await fetch(apiUrl);
-      
-      // التحقق من أن الاستجابة ناجحة
-      if (!response.ok) {
-        throw new Error(`API responded with status ${response.status}`);
-      }
-      
-      // التحقق من نوع المحتوى
-      const contentType = response.headers.get('content-type');
-      if (!contentType || !contentType.includes('application/json')) {
-        // إذا لم يكن JSON، نعيد رسالة خطأ واضحة
-        const textResponse = await response.text();
-        console.log('Non-JSON response:', textResponse.substring(0, 200));
-        throw new Error('الخادم الخارجي يعيد استجابة غير متوقعة');
-      }
-      
-      const data = await response.json();
+    // جرب هذه الـ endpoints المختلفة:
+    const endpoints = [
+      `https://ebnelnegm.com/api?num=${number}`,
+      `https://ebnelnegm.com/data.php?num=${number}`,
+      `https://ebnelnegm.com/info?number=${number}`,
+      `https://ebnelnegm.com/check?phone=${number}`,
+      `https://api.ebnelnegm.com/h.php?num=${number}`,
+      `https://ebnelnegm.com/phone/${number}`
+    ];
 
-      return {
-        statusCode: 200,
-        headers: {
-          'Content-Type': 'application/json',
-          'Access-Control-Allow-Origin': '*'
-        },
-        body: JSON.stringify(data)
-      };
-      
-    } catch (apiError) {
-      // إذا فشل الاتصال بالـ API الخارجي، نعيد بيانات تجريبية
-      console.log('API Error, using mock data:', apiError.message);
-      
-      const mockData = {
+    let data;
+    let lastError;
+
+    // جرب كل endpoint حتى يعمل واحد
+    for (const endpoint of endpoints) {
+      try {
+        console.log('Trying endpoint:', endpoint);
+        const response = await fetch(endpoint);
+        
+        if (!response.ok) continue;
+        
+        const contentType = response.headers.get('content-type');
+        if (contentType && contentType.includes('application/json')) {
+          data = await response.json();
+          break;
+        }
+      } catch (error) {
+        lastError = error;
+        continue;
+      }
+    }
+
+    // إذا لم يعمل أي endpoint، استخدم البيانات التجريبية
+    if (!data) {
+      console.log('All endpoints failed, using mock data');
+      data = {
         number: number,
         carrier: "Vodafone EG",
         country: "Egypt",
         countryCode: "20",
         valid: true,
         type: "mobile",
-        message: "بيانات تجريبية للاختبار"
-      };
-
-      return {
-        statusCode: 200,
-        headers: {
-          'Content-Type': 'application/json',
-          'Access-Control-Allow-Origin': '*'
-        },
-        body: JSON.stringify(mockData)
+        message: "بيانات تجريبية - API غير متاح"
       };
     }
+
+    return {
+      statusCode: 200,
+      headers: {
+        'Content-Type': 'application/json',
+        'Access-Control-Allow-Origin': '*'
+      },
+      body: JSON.stringify(data)
+    };
 
   } catch (err) {
     return {
