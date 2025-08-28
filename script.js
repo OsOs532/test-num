@@ -75,7 +75,7 @@ function toggleLoader(show) {
   } else loaderContainer.style.display = "none";
 }
 
-// Get number info via Netlify Function
+// Get number info via Netlify Function (GET request)
 async function getInfo() {
   const nu = document.getElementById("numberInput").value.trim();
   if (!nu) {
@@ -89,13 +89,17 @@ async function getInfo() {
   try {
     toggleLoader(true);
 
-    const res = await fetch("/.netlify/functions/getNumberInfo", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ number: nu }),
-    });
-
-    const data = await res.json();
+    // Use GET with query parameter instead of POST
+    const res = await fetch(`/.netlify/functions/getNumberInfo?num=${nu}`);
+    const text = await res.text();
+    let data;
+    try {
+      data = JSON.parse(text);
+    } catch {
+      toggleLoader(false);
+      document.getElementById("result").innerHTML = `❌ Error fetching data! \n${text}`;
+      return;
+    }
 
     toggleLoader(false);
     document.getElementById("result").innerHTML = JSON.stringify(data, null, 2);
