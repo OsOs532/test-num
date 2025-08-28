@@ -13,7 +13,7 @@ export async function handler(event, context) {
     // طلب GET مباشر للمصدر الخارجي
     const res = await fetch(`https://ebnelnegm.com/h.php?num=${number}`);
     
-    // تحقق إن الرد JSON
+    // التحقق من الرد كنص أولًا
     const text = await res.text();
     let data;
     try {
@@ -21,7 +21,10 @@ export async function handler(event, context) {
     } catch {
       return {
         statusCode: 500,
-        body: JSON.stringify({ error: "فشل الحصول على البيانات من المصدر الخارجي", details: text }),
+        body: JSON.stringify({
+          error: "فشل الحصول على البيانات من المصدر الخارجي",
+          details: text.trim()
+        }),
       };
     }
 
@@ -32,7 +35,10 @@ export async function handler(event, context) {
   } catch (err) {
     return {
       statusCode: 500,
-      body: JSON.stringify({ error: "حدث خطأ غير متوقع", details: err.message }),
+      body: JSON.stringify({
+        error: "حدث خطأ غير متوقع",
+        details: err.message
+      }),
     };
   }
 }
