@@ -1,30 +1,24 @@
 export async function handler(event, context) {
   try {
-    // رقم الهاتف يُرسل كـ query string
     const number = event.queryStringParameters?.num;
 
     if (!number) {
       return {
         statusCode: 400,
-        body: JSON.stringify({ error: "رقم الهاتف مفقود" }),
+        body: JSON.stringify({ error: "Phone number is missing" }),
       };
     }
 
-    // طلب GET مباشر للمصدر الخارجي
     const res = await fetch(`https://ebnelnegm.com/h.php?num=${number}`);
-    
-    // التحقق من الرد كنص أولًا
     const text = await res.text();
+
     let data;
     try {
       data = JSON.parse(text);
     } catch {
       return {
         statusCode: 500,
-        body: JSON.stringify({
-          error: "فشل الحصول على البيانات من المصدر الخارجي",
-          details: text.trim()
-        }),
+        body: JSON.stringify({ error: "Failed to fetch data from external source", details: text }),
       };
     }
 
@@ -35,10 +29,7 @@ export async function handler(event, context) {
   } catch (err) {
     return {
       statusCode: 500,
-      body: JSON.stringify({
-        error: "حدث خطأ غير متوقع",
-        details: err.message
-      }),
+      body: JSON.stringify({ error: "Unexpected error occurred", details: err.message }),
     };
   }
 }
