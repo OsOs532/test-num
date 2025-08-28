@@ -1,18 +1,21 @@
-// الصوت الخلفي
-const audio = new Audio('العالمي.mp3');
+// ========================
+// الموسيقى الخلفية
+// ========================
+const audio = document.createElement('audio');
+audio.src = 'العالمي.mp3'; // تأكد من أن الملف موجود بنفس المجلد
 audio.loop = true;
 
-let audioStarted = false;
+function startAudio() {
+  audio.play().catch(e => console.log('Autoplay blocked:', e));
+  document.removeEventListener('click', startAudio);
+}
 
-// تشغيل الصوت عند أول ضغطة على زر البحث
-document.getElementById('searchButton').addEventListener('click', () => {
-  if (!audioStarted) {
-    audio.play().catch(e => console.log('Autoplay blocked:', e));
-    audioStarted = true;
-  }
-});
+// تشغيل الصوت عند أول نقرة
+document.addEventListener('click', startAudio);
 
+// ========================
 // Matrix animation
+// ========================
 const canvas = document.getElementById("matrix");
 const ctx = canvas.getContext("2d");
 
@@ -45,12 +48,16 @@ function initMatrix() {
   setInterval(draw, 35);
 }
 
+// ========================
 // Handle Enter key press
+// ========================
 function handleKeyPress(event) {
   if (event.key === "Enter") getInfo();
 }
 
+// ========================
 // Country codes mapping
+// ========================
 const countryCodes = {
   "20": "eg", "966": "sa", "971": "ae", "962": "jo", "973": "bh",
   "964": "iq", "965": "kw", "968": "om", "974": "qa", "963": "sy",
@@ -58,7 +65,9 @@ const countryCodes = {
   "249": "sd", "253": "dj", "252": "so", "222": "mr"
 };
 
-// Extract country code from phone number
+// ========================
+// Extract country code
+// ========================
 function extractCountryCode(phoneNumber) {
   const cleanedNumber = phoneNumber.replace(/\D/g, "");
   for (const code in countryCodes) {
@@ -67,7 +76,9 @@ function extractCountryCode(phoneNumber) {
   return null;
 }
 
+// ========================
 // Display country flag
+// ========================
 function displayCountryFlag(countryCode) {
   const flagElement = document.getElementById("countryFlag");
   if (countryCode && countryCodes[countryCode]) {
@@ -79,7 +90,9 @@ function displayCountryFlag(countryCode) {
   } else flagElement.style.display = "none";
 }
 
-// Loading bar control
+// ========================
+// Loader control
+// ========================
 function toggleLoader(show) {
   const loaderContainer = document.getElementById("loaderContainer");
   const resultDiv = document.getElementById("result");
@@ -89,7 +102,9 @@ function toggleLoader(show) {
   } else loaderContainer.style.display = "none";
 }
 
-// Get number info via Netlify Function
+// ========================
+// Get number info (Netlify function)
+// ========================
 async function getInfo() {
   const nu = document.getElementById("numberInput").value.trim();
   if (!nu) {
@@ -121,7 +136,9 @@ async function getInfo() {
   }
 }
 
+// ========================
 // Initialize application
+// ========================
 document.addEventListener("DOMContentLoaded", function () {
   initMatrix();
   document.getElementById("numberInput").addEventListener("keypress", handleKeyPress);
