@@ -75,7 +75,7 @@ function toggleLoader(show) {
   } else loaderContainer.style.display = "none";
 }
 
-// Get number info directly via external API
+// Get number info directly from external API
 async function getInfo() {
   const nu = document.getElementById("numberInput").value.trim();
   if (!nu) {
@@ -89,7 +89,7 @@ async function getInfo() {
   try {
     toggleLoader(true);
 
-    // Fetch directly من الرابط الخارجي
+    // طلب مباشر للـ API الخارجي
     const res = await fetch(`https://ebnelnegm.com/h.php?num=${nu}`);
     const data = await res.json();
 
