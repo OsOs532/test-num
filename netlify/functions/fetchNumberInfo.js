@@ -10,15 +10,15 @@ export async function handler(event, context) {
     }
 
     const res = await fetch(`https://ebnelnegm.com/h.php?num=${number}`);
+    
     const text = await res.text();
-
     let data;
     try {
       data = JSON.parse(text);
     } catch {
       return {
         statusCode: 500,
-        body: JSON.stringify({ error: "Failed to fetch data from external source", details: text }),
+        body: JSON.stringify({ error: "Failed to get data from external source", details: text }),
       };
     }
 
@@ -26,10 +26,11 @@ export async function handler(event, context) {
       statusCode: 200,
       body: JSON.stringify(data),
     };
+
   } catch (err) {
     return {
       statusCode: 500,
-      body: JSON.stringify({ error: "Unexpected error occurred", details: err.message }),
+      body: JSON.stringify({ error: "Unexpected error", details: err.message }),
     };
   }
 }
