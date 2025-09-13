@@ -1,52 +1,109 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Os Os Lookup</title>
-    <link rel="stylesheet" href="style.css">
-    <script src="script.js" defer></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Number Lookup</title>
+  <link rel="stylesheet" href="style.css">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
 </head>
 <body>
-    <div class="container">
-        <div class="header">
-            <div class="logo">
-                <img src="logo.png" alt="Logo" class="logo-icon">
-                <div class="logo-text">Os Os Lookup</div>
-            </div>
-            <div class="subtitle">ابحث عن الرقم</div>
-        </div>
+  <div class="container">
 
-        <div class="search-section">
-            <div class="search-container">
-                <div class="phone-input-container">
-                    <input type="text" id="numberInput" placeholder="01006869442">
-                </div>
-                <button id="searchButton" class="search-btn">🔍 Search</button>
-                <div class="input-hint">(●'◡'●) ادخل الرقم بدون رمز الدولة (●'◡'●)</div>
-            </div>
-        </div>
+    <!-- Header -->
+    <header class="header">
+      <div class="logo">
+        <img src="Profile.jpg" alt="Logo" class="logo-icon">
+        <h1 class="logo-text">Os Os Lookup</h1>
+      </div>
+    </header>
 
-        <div id="loading" class="loading" style="display:none;">
-            <div class="loading-spinner"></div>
-            <p>جارٍ البحث...</p>
+    <!-- Search Section -->
+    <div class="search-section">
+      <div class="search-container">
+        <div class="phone-input-container">
+          <input 
+            type="tel" 
+            id="phoneInput" 
+            class="phone-input" 
+            placeholder=" ...أدخل رقم الهاتف"
+          >
+          <button class="search-btn" id="searchBtn">
+            <span class="search-icon">🔍</span>
+            <span class="search-text">Search</span>
+          </button>
         </div>
-
-        <div id="noResults" class="no-results" style="display:none;">
-            <div class="no-results-icon">❌</div>
-            <h3>لم يتم العثور على معلومات</h3>
-            <p>عذراً، لم نتمكن من العثور على معلومات لهذا الرقم</p>
-        </div>
-
-        <div id="resultSection" class="result-section" style="display:none;">
-            <div id="resultCard" class="result-card"></div>
-        </div>
-
-        <!-- Footer -->
-        <div class="footer-text">
-            Facebook | Instagram | LinkedIn | GitHub <br>
-            All rights reserved © Mohamed Osama
-        </div>
+        <div class="input-hint">(●'◡'●) ادخل الرقم بدون رمز الدولة (●'◡'●)</div>
+      </div>
     </div>
+
+    <!-- Result Section -->
+    <div class="result-section" id="resultSection" style="display: none;">
+      <div class="result-card" id="resultCard"></div>
+    </div>
+
+    <!-- Loading -->
+    <div class="loading" id="loading" style="display: none;">
+      <div class="loading-spinner"></div>
+      <p>جاري البحث عن صاحب الرقم...</p>
+    </div>
+
+    <!-- No Results -->
+    <div class="no-results" id="noResults" style="display: none;">
+      <div class="no-results-icon">❌</div>
+      <h3>لم يتم العثور على معلومات</h3>
+      <p>عذراً، لم نتمكن من العثور على معلومات لهذا الرقم</p>
+      <div class="suggestions">
+        <h4>تأكد من:</h4>
+        <ul>
+          <li> كتابة الرقم بشكل صحيح بدون رمز الدولة</li>
+          <li>عدم وجود مسافات أو رموز إضافية</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Features -->
+    <div class="features-section">
+      <h3 class="features-title">مميزات الخدمة</h3>
+      <div class="features-grid">
+        <div class="feature-card">
+          <div class="feature-icon">⚡</div>
+          <h4>بحث سريع</h4>
+          <p>نتائج فورية في ثوانٍ معدودة</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">🔒</div>
+          <h4>آمن ومحمي</h4>
+          <p>حماية كاملة لخصوصيتك</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">📊</div>
+          <h4>قاعدة بيانات كبيرة</h4>
+          <p>ملايين الأرقام المسجلة</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer>
+    <div class="socials">
+      <a href="https://facebook.com" target="_blank" class="social-icon facebook">
+        <i class="fab fa-facebook-f"></i><span>Facebook</span>
+      </a>
+      <a href="https://instagram.com" target="_blank" class="social-icon instagram">
+        <i class="fab fa-instagram"></i><span>Instagram</span>
+      </a>
+      <a href="https://linkedin.com" target="_blank" class="social-icon linkedin">
+        <i class="fab fa-linkedin-in"></i><span>LinkedIn</span>
+      </a>
+      <a href="https://github.com" target="_blank" class="social-icon github">
+        <i class="fab fa-github"></i><span>GitHub</span>
+      </a>
+    </div>
+    <div class="footer-text">All rights reserved © Mohamed Osama</div>
+  </footer>
+
+  <script src="main.js"></script>
 </body>
 </html>
