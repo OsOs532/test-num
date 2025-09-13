@@ -1,108 +1,70 @@
-// getNumberInfo.js - Netlify Function
-export async function handler(event, context) {
-  const headers = {
-    'Content-Type': 'application/json',
-    'Access-Control-Allow-Origin': '*'
-  };
+async function getInfo() {
+  const nu = document.getElementById("phoneInput").value.trim();
+  const resultCard = document.getElementById("resultCard");
+  const resultSection = document.getElementById("resultSection");
+  const loading = document.getElementById("loading");
+  const noResults = document.getElementById("noResults");
+
+  if (!nu) {
+    resultSection.style.display = "none";
+    noResults.style.display = "block";
+    return;
+  }
+
+  loading.style.display = "block";
+  resultSection.style.display = "none";
+  noResults.style.display = "none";
 
   try {
-    let number;
+    const response = await fetch("/.netlify/functions/getNumberInfo", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ number: nu })
+    });
 
-    if (event.httpMethod === 'POST') {
-      try {
-        const body = JSON.parse(event.body);
-        number = body.number;
-      } catch (e) {
-        const params = new URLSearchParams(event.body);
-        number = params.get('number');
-      }
+    const data = await response.json();
+    loading.style.display = "none";
+
+    if (data && data.valid) {
+      resultCard.innerHTML = `
+        <div class="result-header">
+          <div class="result-avatar">OS</div>
+          <div class="result-info">
+            <h2>${data.name || "غير معروف"}</h2>
+            <div class="result-phone">${data.internationalFormat || data.number}</div>
+          </div>
+        </div>
+        <div class="result-details">
+          <div class="detail-item">
+            <div class="detail-icon"><i class="fa fa-globe"></i></div>
+            <div class="detail-text">
+              <div class="detail-label">الدولة</div>
+              <div class="detail-value">${data.country || "غير متاح"}</div>
+            </div>
+          </div>
+          <div class="detail-item">
+            <div class="detail-icon"><i class="fa fa-sim-card"></i></div>
+            <div class="detail-text">
+              <div class="detail-label">الشركة</div>
+              <div class="detail-value">${data.carrier}</div>
+            </div>
+          </div>
+          <div class="detail-item">
+            <div class="detail-icon"><i class="fa fa-map-marker-alt"></i></div>
+            <div class="detail-text">
+              <div class="detail-label">الموقع</div>
+              <div class="detail-value">${data.location}</div>
+            </div>
+          </div>
+        </div>`;
+      resultSection.style.display = "block";
+    } else {
+      noResults.style.display = "block";
     }
 
-    if (!number) {
-      return {
-        statusCode: 400,
-        headers,
-        body: JSON.stringify({ error: "Phone number required" })
-      };
-    }
-
-    const apiUrl = `https://ebnelnegm.com/HH/index.php?num=${encodeURIComponent(number)}`;
-    console.log('Fetching from API:', apiUrl);
-
-    try {
-      const response = await fetch(apiUrl, {
-        headers: {
-          'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
-          'Accept': 'application/json',
-          'Referer': 'https://ebnelnegm.com/'
-        }
-      });
-
-      if (!response.ok) {
-        throw new Error(`API responded with status ${response.status}`);
-      }
-
-      const contentType = response.headers.get('content-type');
-      let data;
-      if (!contentType || !contentType.includes('application/json')) {
-        const textResponse = await response.text();
-        console.log('Non-JSON response received:', textResponse.substring(0, 200));
-        try {
-          data = JSON.parse(textResponse);
-        } catch (parseError) {
-          throw new Error('Response is not valid JSON');
-        }
-      } else {
-        data = await response.json();
-      }
-
-      return {
-        statusCode: 200,
-        headers,
-        body: JSON.stringify(data)
-      };
-
-    } catch (apiError) {
-      console.error('API Error:', apiError.message);
-
-      const cleanNumber = number.replace(/\D/g, '');
-      let carrier = "Vodafone EG";
-      if (cleanNumber.startsWith('010')) carrier = "Vodafone EG";
-      else if (cleanNumber.startsWith('011')) carrier = "Etisalat EG"; 
-      else if (cleanNumber.startsWith('012')) carrier = "Orange EG"; 
-      else if (cleanNumber.startsWith('015')) carrier = "WE"; 
-
-      let type = cleanNumber.startsWith('01') ? "mobile": "landline"; 
-
-      const backupData = { 
-        number: number, 
-        name: "غير معروف",
-        carrier: carrier, 
-        country: "Egypt", 
-        countryCode: "20", 
-        valid: cleanNumber.length >= 10, 
-        type: type, 
-        location: "Cairo", 
-        internationalFormat: `+20${cleanNumber}`, 
-        message: "Data from API reserve", 
-        timestamp: new Date().toISOString() 
-      }; 
-
-      return { 
-        statusCode: 200, 
-        headers, 
-        body: JSON.stringify(backupData) 
-      }; 
-    } 
-
-  } catch (err) { 
-    return { 
-      statusCode: 500, 
-      headers, 
-      body: JSON.stringify({ 
-        error: "An unexpected error occurred", 
-        details: err.message 
-      }) 
-    }; 
+  } catch (err) {
+    console.error("Error fetching number info:", err);
+    loading.style.display = "none";
+    noResults.style.display = "block";
   }
 }
