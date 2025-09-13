@@ -1,5 +1,10 @@
 // getNumberInfo.js - Netlify Function
 export async function handler(event, context) {
+  const headers = {
+    'Content-Type': 'application/json',
+    'Access-Control-Allow-Origin': '*'
+  };
+
   try {
     let number;
 
@@ -16,7 +21,7 @@ export async function handler(event, context) {
     if (!number) {
       return {
         statusCode: 400,
-        headers: { 'Content-Type': 'application/json' },
+        headers,
         body: JSON.stringify({ error: "Phone number required" })
       };
     }
@@ -38,33 +43,22 @@ export async function handler(event, context) {
       }
 
       const contentType = response.headers.get('content-type');
+      let data;
       if (!contentType || !contentType.includes('application/json')) {
         const textResponse = await response.text();
         console.log('Non-JSON response received:', textResponse.substring(0, 200));
-
         try {
-          const jsonData = JSON.parse(textResponse);
-          return {
-            statusCode: 200,
-            headers: {
-              'Content-Type': 'application/json',
-              'Access-Control-Allow-Origin': '*'
-            },
-            body: JSON.stringify(jsonData)
-          };
+          data = JSON.parse(textResponse);
         } catch (parseError) {
           throw new Error('Response is not valid JSON');
         }
+      } else {
+        data = await response.json();
       }
-
-      const data = await response.json();
 
       return {
         statusCode: 200,
-        headers: {
-          'Content-Type': 'application/json',
-          'Access-Control-Allow-Origin': '*'
-        },
+        headers,
         body: JSON.stringify(data)
       };
 
@@ -72,7 +66,6 @@ export async function handler(event, context) {
       console.error('API Error:', apiError.message);
 
       const cleanNumber = number.replace(/\D/g, '');
-
       let carrier = "Vodafone EG";
       if (cleanNumber.startsWith('010')) carrier = "Vodafone EG";
       else if (cleanNumber.startsWith('011')) carrier = "Etisalat EG"; 
@@ -97,10 +90,7 @@ export async function handler(event, context) {
 
       return { 
         statusCode: 200, 
-        headers: { 
-          'Content-Type': 'application/json', 
-          'Access-Control-Allow-Origin': '*' 
-        }, 
+        headers, 
         body: JSON.stringify(backupData) 
       }; 
     } 
@@ -108,7 +98,7 @@ export async function handler(event, context) {
   } catch (err) { 
     return { 
       statusCode: 500, 
-      headers: { 'Content-Type': 'application/json' }, 
+      headers, 
       body: JSON.stringify({ 
         error: "An unexpected error occurred", 
         details: err.message 
