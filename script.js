@@ -1,40 +1,29 @@
-// Handle Enter key press
-function handleKeyPress(event) {
-  if (event.key === "Enter") getInfo();
-}
-
-// Show/Hide Loader
-function toggleLoader(show) {
-  const loader = document.getElementById("loading");
-  loader.style.display = show ? "block" : "none";
-}
-
-// Get number info via Netlify Function
 async function getInfo() {
-  const number = document.getElementById("numberInput").value.trim();
-  const resultSection = document.getElementById("resultSection");
+  const nu = document.getElementById("phoneInput").value.trim();
   const resultCard = document.getElementById("resultCard");
+  const resultSection = document.getElementById("resultSection");
+  const loading = document.getElementById("loading");
   const noResults = document.getElementById("noResults");
 
-  if (!number) {
+  if (!nu) {
     resultSection.style.display = "none";
     noResults.style.display = "block";
     return;
   }
 
-  toggleLoader(true);
+  loading.style.display = "block";
   resultSection.style.display = "none";
   noResults.style.display = "none";
 
   try {
-    const res = await fetch("/.netlify/functions/getNumberInfo", {
+    const response = await fetch("/.netlify/functions/getNumberInfo", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ number })
+      body: JSON.stringify({ number: nu })
     });
 
-    const data = await res.json();
-    toggleLoader(false);
+    const data = await response.json();
+    loading.style.display = "none";
 
     if (data && data.valid) {
       resultCard.innerHTML = `
@@ -57,31 +46,40 @@ async function getInfo() {
             <div class="detail-icon"><i class="fa fa-sim-card"></i></div>
             <div class="detail-text">
               <div class="detail-label">الشركة</div>
-              <div class="detail-value">${data.carrier}</div>
+              <div class="detail-value">${data.carrier || "غير متاح"}</div>
             </div>
           </div>
           <div class="detail-item">
             <div class="detail-icon"><i class="fa fa-map-marker-alt"></i></div>
             <div class="detail-text">
               <div class="detail-label">الموقع</div>
-              <div class="detail-value">${data.location}</div>
+              <div class="detail-value">${data.location || "غير متاح"}</div>
             </div>
           </div>
-        </div>`;
+          <div class="detail-item">
+            <div class="detail-icon"><i class="fa fa-info-circle"></i></div>
+            <div class="detail-text">
+              <div class="detail-label">النوع</div>
+              <div class="detail-value">${data.type || "غير متاح"}</div>
+            </div>
+          </div>
+          <div class="detail-item">
+            <div class="detail-icon"><i class="fa fa-clock"></i></div>
+            <div class="detail-text">
+              <div class="detail-label">تاريخ الطلب</div>
+              <div class="detail-value">${data.timestamp || "غير متاح"}</div>
+            </div>
+          </div>
+        </div>
+      `;
       resultSection.style.display = "block";
     } else {
       noResults.style.display = "block";
     }
 
   } catch (err) {
-    console.error(err);
-    toggleLoader(false);
+    console.error("Error fetching number info:", err);
+    loading.style.display = "none";
     noResults.style.display = "block";
   }
 }
-
-// Initialize event listeners
-document.addEventListener("DOMContentLoaded", function () {
-  document.getElementById("searchButton").addEventListener("click", getInfo);
-  document.getElementById("numberInput").addEventListener("keypress", handleKeyPress);
-});
