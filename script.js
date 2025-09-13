@@ -3,7 +3,7 @@ function handleKeyPress(event) {
   if (event.key === "Enter") getInfo();
 }
 
-// Get number info
+// Get number info from Netlify Function
 async function getInfo() {
   const nu = document.getElementById("phoneInput").value.trim();
   const resultCard = document.getElementById("resultCard");
@@ -22,25 +22,45 @@ async function getInfo() {
   resultSection.style.display = "none";
   noResults.style.display = "none";
 
-  setTimeout(() => {
+  try {
+    const response = await fetch("/.netlify/functions/getNumberInfo", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ number: nu })
+    });
+
+    const data = await response.json();
     loading.style.display = "none";
 
-    // Demo response
-    if (nu === "123456789") {
+    if (data && data.valid) {
       resultCard.innerHTML = `
         <div class="result-header">
           <div class="result-avatar">OS</div>
           <div class="result-info">
-            <h2>Mohamed Osama</h2>
-            <div class="result-phone">${nu}</div>
+            <h2>${data.name || "غير معروف"}</h2>
+            <div class="result-phone">${data.internationalFormat || data.number}</div>
           </div>
         </div>
         <div class="result-details">
           <div class="detail-item">
-            <div class="detail-icon"><i class="fa fa-user"></i></div>
+            <div class="detail-icon"><i class="fa fa-globe"></i></div>
             <div class="detail-text">
-              <div class="detail-label">الوظيفة</div>
-              <div class="detail-value">Cyber Security</div>
+              <div class="detail-label">الدولة</div>
+              <div class="detail-value">${data.country || "غير متاح"}</div>
+            </div>
+          </div>
+          <div class="detail-item">
+            <div class="detail-icon"><i class="fa fa-sim-card"></i></div>
+            <div class="detail-text">
+              <div class="detail-label">الشركة</div>
+              <div class="detail-value">${data.carrier}</div>
+            </div>
+          </div>
+          <div class="detail-item">
+            <div class="detail-icon"><i class="fa fa-map-marker-alt"></i></div>
+            <div class="detail-text">
+              <div class="detail-label">الموقع</div>
+              <div class="detail-value">${data.location}</div>
             </div>
           </div>
         </div>`;
@@ -48,7 +68,12 @@ async function getInfo() {
     } else {
       noResults.style.display = "block";
     }
-  }, 2000);
+
+  } catch (err) {
+    console.error("Error fetching number info:", err);
+    loading.style.display = "none";
+    noResults.style.display = "block";
+  }
 }
 
 document.addEventListener("DOMContentLoaded", function () {
