@@ -1,9 +1,3 @@
-// Handle Enter key press
-function handleKeyPress(event) {
-  if (event.key === "Enter") getInfo();
-}
-
-// Get number info
 async function getInfo() {
   const nu = document.getElementById("phoneInput").value.trim();
   const resultCard = document.getElementById("resultCard");
@@ -17,7 +11,6 @@ async function getInfo() {
     return;
   }
 
-  // Show loading
   loading.style.display = "block";
   resultSection.style.display = "none";
   noResults.style.display = "none";
@@ -30,16 +23,19 @@ async function getInfo() {
 
     if (!res.ok) throw new Error("خطأ في الخادم");
 
-    const data = await res.text(); // 📌 هنا بنجيب النص فقط
+    const data = await res.json(); // 📌 السيرفر بيرجع Array
     loading.style.display = "none";
 
-    if (data && data.trim() !== "") {
+    if (Array.isArray(data) && data.length > 0) {
+      const person = data[0]; // أول عنصر
+
       resultCard.innerHTML = `
         <div class="result-header">
           <div class="result-avatar">OS</div>
           <div class="result-info">
-            <h2>${data}</h2>
+            <h2>${person.name || "غير معروف"}</h2>
             <div class="result-phone">${nu}</div>
+            ${person.type ? `<div class="result-type">${person.type}</div>` : ""}
           </div>
         </div>
       `;
@@ -55,8 +51,3 @@ async function getInfo() {
 
   document.getElementById("phoneInput").value = "";
 }
-
-document.addEventListener("DOMContentLoaded", function () {
-  document.getElementById("phoneInput").addEventListener("keypress", handleKeyPress);
-  document.getElementById("searchBtn").addEventListener("click", getInfo);
-});
