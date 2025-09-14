@@ -1,10 +1,10 @@
-// main.js - Version مبسطة
 async function getInfo() {
   const nu = document.getElementById("phoneInput").value.trim();
   const resultCard = document.getElementById("resultCard");
   const resultSection = document.getElementById("resultSection");
   const loading = document.getElementById("loading");
   const noResults = document.getElementById("noResults");
+  const mainContent = document.getElementById("mainContent"); // كل المحتوى غير النتيجة هنا
 
   if (!nu) {
     resultSection.style.display = "none";
@@ -12,6 +12,7 @@ async function getInfo() {
     return;
   }
 
+  // عرض التحميل
   loading.style.display = "block";
   resultSection.style.display = "none";
   noResults.style.display = "none";
@@ -47,6 +48,10 @@ async function getInfo() {
       </div>
     `;
 
+    // إخفاء باقي الصفحة
+    mainContent.style.display = "none";
+
+    // عرض النتيجة
     resultSection.style.display = "block";
 
   } catch (err) {
@@ -59,6 +64,7 @@ async function getInfo() {
   document.getElementById("phoneInput").focus();
 }
 
+// إضافة الأحداث للبحث
 document.addEventListener("DOMContentLoaded", function () {
   document.getElementById("phoneInput").addEventListener("keypress", function (e) {
     if (e.key === "Enter") getInfo();
