@@ -1,4 +1,5 @@
-// Get number info
+document.getElementById("searchBtn").addEventListener("click", getInfo);
+
 async function getInfo() {
   const nu = document.getElementById("phoneInput").value.trim();
   const resultCard = document.getElementById("resultCard");
@@ -12,33 +13,26 @@ async function getInfo() {
     return;
   }
 
-  // Show loading
+  // إظهار اللودينج
   loading.style.display = "block";
   resultSection.style.display = "none";
   noResults.style.display = "none";
 
   try {
-    const res = await fetch(`https://ebnelnegm.com/HH/index.php?num=${encodeURIComponent(nu)}`, {
-      method: "GET",
-      cache: "no-store"
-    });
+    const res = await fetch(`https://os-api-lyart.vercel.app/lookup/${nu}`);
+    const data = await res.json();
 
-    if (!res.ok) throw new Error("خطأ في الخادم");
-
-    const data = await res.json(); // API بيرجع JSON Array
     loading.style.display = "none";
 
-    if (Array.isArray(data) && data.length > 0) {
-      const person = data[0]; // أول عنصر
+    if (data && data.length > 0) {
+      const person = data[0];
+      const initials = person.name ? person.name.substring(0, 2) : "";
 
       resultCard.innerHTML = `
-        <div class="result-header">
-          <div class="result-avatar">OS</div>
-          <div class="result-info">
-            <h2>${person.name || "غير معروف"}</h2>
-            <div class="result-phone">${nu}</div>
-            ${person.type ? `<div class="result-type">النوع: ${person.type}</div>` : ""}
-          </div>
+        <div class="result-avatar">${initials}</div>
+        <div class="result-info">
+          <h3>${person.name || "غير معروف"}</h3>
+          <p>${nu}</p>
         </div>
       `;
       resultSection.style.display = "block";
@@ -50,17 +44,4 @@ async function getInfo() {
     loading.style.display = "none";
     noResults.style.display = "block";
   }
-
-  // امسح الحقل وارجع الـ focus عليه عشان تكتب رقم جديد
-  document.getElementById("phoneInput").value = "";
-  document.getElementById("phoneInput").focus();
 }
-
-// ✅ Search button + Enter key
-document.addEventListener("DOMContentLoaded", function () {
-  document.getElementById("phoneInput").addEventListener("keypress", function (e) {
-    if (e.key === "Enter") getInfo();
-  });
-
-  document.getElementById("searchBtn").addEventListener("click", getInfo);
-});
