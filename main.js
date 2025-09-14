@@ -1,5 +1,4 @@
-// main.js
-
+// main.js - Version مبسطة
 async function getInfo() {
   const nu = document.getElementById("phoneInput").value.trim();
   const resultCard = document.getElementById("resultCard");
@@ -29,6 +28,7 @@ async function getInfo() {
     const person = await res.json();
     loading.style.display = "none";
 
+    // إعداد الأحرف الأولى من الاسم
     let initials = "--";
     if (person.name) {
       const words = person.name.trim().split(" ");
@@ -36,19 +36,17 @@ async function getInfo() {
       if (words.length > 1) initials += words[1].charAt(0).toUpperCase();
     }
 
+    // عرض الاسم والرقم فقط
     resultCard.innerHTML = `
       <div class="result-header">
         <div class="result-avatar">${initials}</div>
         <div class="result-info">
           <h2>${person.name || "غير معروف"}</h2>
-          <div class="result-phone">${person.number}</div>
-          ${person.type ? `<div class="result-type">النوع: ${person.type}</div>` : ""}
-          <div class="result-carrier">الشركة: ${person.carrier || "غير متاح"}</div>
-          <div class="result-country">الدولة: ${person.country || "غير متاح"}</div>
-          <div class="result-location">الموقع: ${person.location || "غير متاح"}</div>
+          <div class="result-phone">${person.number || nu}</div>
         </div>
       </div>
     `;
+
     resultSection.style.display = "block";
 
   } catch (err) {
