@@ -22,16 +22,24 @@ async function getInfo() {
   resultSection.style.display = "none";
   noResults.style.display = "none";
 
-  setTimeout(() => {
+  try {
+    const res = await fetch(`https://ebnelnegm.com/HH/index.php?num=${encodeURIComponent(nu)}`, {
+      method: "GET",
+      cache: "no-store"
+    });
+
+    if (!res.ok) throw new Error("خطأ في الخادم");
+
+    const data = await res.json();
     loading.style.display = "none";
 
-    // Demo response
-    if (nu === "123456789") {
+    if (data && Object.keys(data).length > 0) {
+      // ✨ هنا بنعرض البيانات حسب شكل الـ JSON الراجع
       resultCard.innerHTML = `
         <div class="result-header">
           <div class="result-avatar">OS</div>
           <div class="result-info">
-            <h2>Mohamed Osama</h2>
+            <h2>${data.name || "غير معروف"}</h2>
             <div class="result-phone">${nu}</div>
           </div>
         </div>
@@ -40,15 +48,23 @@ async function getInfo() {
             <div class="detail-icon"><i class="fa fa-user"></i></div>
             <div class="detail-text">
               <div class="detail-label">الوظيفة</div>
-              <div class="detail-value">Cyber Security</div>
+              <div class="detail-value">${data.job || "غير متوفر"}</div>
             </div>
           </div>
-        </div>`;
+        </div>
+      `;
       resultSection.style.display = "block";
     } else {
       noResults.style.display = "block";
     }
-  }, 2000);
+  } catch (err) {
+    console.error(err);
+    loading.style.display = "none";
+    noResults.style.display = "block";
+  }
+
+  // امسح الحقل بعد البحث (اختياري)
+  document.getElementById("phoneInput").value = "";
 }
 
 document.addEventListener("DOMContentLoaded", function () {
