@@ -30,7 +30,16 @@ async function getInfo() {
 
     if (Array.isArray(data) && data.length > 0) {
       const person = data[0]; // أول عنصر
-      const initials = person.name ? person.name.substring(0, 2) : "--"; // أول حرفين من الاسم
+      
+      // ✅ أول حرف من أول كلمتين
+      let initials = "--";
+      if (person.name) {
+        const words = person.name.trim().split(" ");
+        initials = words[0].charAt(0).toUpperCase();
+        if (words.length > 1) {
+          initials += words[1].charAt(0).toUpperCase();
+        }
+      }
 
       resultCard.innerHTML = `
         <div class="result-header">
