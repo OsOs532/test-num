@@ -30,26 +30,16 @@ async function getInfo() {
 
     if (!res.ok) throw new Error("خطأ في الخادم");
 
-    const data = await res.json();
+    const data = await res.text(); // 📌 هنا بنجيب النص فقط
     loading.style.display = "none";
 
-    if (data && Object.keys(data).length > 0) {
-      // ✨ هنا بنعرض البيانات حسب شكل الـ JSON الراجع
+    if (data && data.trim() !== "") {
       resultCard.innerHTML = `
         <div class="result-header">
           <div class="result-avatar">OS</div>
           <div class="result-info">
-            <h2>${data.name || "غير معروف"}</h2>
+            <h2>${data}</h2>
             <div class="result-phone">${nu}</div>
-          </div>
-        </div>
-        <div class="result-details">
-          <div class="detail-item">
-            <div class="detail-icon"><i class="fa fa-user"></i></div>
-            <div class="detail-text">
-              <div class="detail-label">الوظيفة</div>
-              <div class="detail-value">${data.job || "غير متوفر"}</div>
-            </div>
           </div>
         </div>
       `;
@@ -63,7 +53,6 @@ async function getInfo() {
     noResults.style.display = "block";
   }
 
-  // امسح الحقل بعد البحث (اختياري)
   document.getElementById("phoneInput").value = "";
 }
 
