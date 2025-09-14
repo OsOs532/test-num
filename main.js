@@ -1,4 +1,7 @@
 document.getElementById("searchBtn").addEventListener("click", getInfo);
+document.getElementById("phoneInput").addEventListener("keypress", function (event) {
+  if (event.key === "Enter") getInfo();
+});
 
 async function getInfo() {
   const nu = document.getElementById("phoneInput").value.trim();
@@ -20,19 +23,25 @@ async function getInfo() {
 
   try {
     const res = await fetch(`https://os-api-lyart.vercel.app/lookup/${nu}`);
-    const data = await res.json();
+    if (!res.ok) throw new Error("فشل الاتصال بالسيرفر");
 
+    const data = await res.json();
     loading.style.display = "none";
 
     if (data && data.length > 0) {
       const person = data[0];
-      const initials = person.name ? person.name.substring(0, 2) : "";
+      const name = person.name || "غير معروف";
+
+      // أول حرفين من الاسم
+      const initials = name.substring(0, 2);
 
       resultCard.innerHTML = `
-        <div class="result-avatar">${initials}</div>
-        <div class="result-info">
-          <h3>${person.name || "غير معروف"}</h3>
-          <p>${nu}</p>
+        <div class="result-header">
+          <div class="result-avatar">${initials}</div>
+          <div class="result-info">
+            <h2>${name}</h2>
+            <div class="result-phone">${nu}</div>
+          </div>
         </div>
       `;
       resultSection.style.display = "block";
@@ -44,4 +53,7 @@ async function getInfo() {
     loading.style.display = "none";
     noResults.style.display = "block";
   }
+
+  // تفريغ الحقل بعد البحث (اختياري)
+  document.getElementById("phoneInput").value = "";
 }
