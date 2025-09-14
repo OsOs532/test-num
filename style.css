@@ -729,3 +729,121 @@ body {
         --bg-secondary: #ffffff;
     }
 }
+/* تحسين العرض على الشاشات الصغيرة */
+@media (max-width: 768px) {
+    .container {
+        padding: var(--spacing-sm);
+        max-width: 100%;
+    }
+
+    .logo {
+        flex-direction: column;
+        gap: var(--spacing-xs);
+    }
+
+    .logo-icon {
+        width: 50px;
+        height: 50px;
+    }
+
+    .logo-text {
+        font-size: 1.5rem;
+        text-align: center;
+    }
+
+    .search-container {
+        padding: var(--spacing-md);
+    }
+
+    .phone-input-container {
+        flex-direction: column;
+        width: 100%;
+    }
+
+    .phone-input {
+        width: 100%;
+        font-size: 1rem;
+        padding: var(--spacing-sm) var(--spacing-md);
+    }
+
+    .search-btn {
+        width: 100%;
+        justify-content: center;
+        font-size: 1rem;
+        padding: var(--spacing-sm);
+        margin-top: var(--spacing-sm);
+    }
+
+    .result-header {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .result-avatar {
+        width: 60px;
+        height: 60px;
+        font-size: 1.5rem;
+    }
+
+    .result-info h2 {
+        font-size: 1.4rem;
+    }
+
+    .result-phone {
+        font-size: 1rem;
+    }
+
+    .features-grid {
+        grid-template-columns: 1fr;
+        gap: var(--spacing-md);
+    }
+
+    .feature-card {
+        padding: var(--spacing-md);
+    }
+
+    .socials {
+        flex-direction: column;
+        gap: var(--spacing-sm);
+    }
+
+    .social-icon {
+        width: 100%;
+        justify-content: center;
+    }
+}
+
+/* شاشات أصغر (موبايلات جداً) */
+@media (max-width: 480px) {
+    .logo-text {
+        font-size: 1.2rem;
+    }
+
+    .search-btn {
+        font-size: 0.9rem;
+        padding: var(--spacing-sm);
+    }
+
+    .result-info h2 {
+        font-size: 1.2rem;
+    }
+
+    .result-avatar {
+        width: 50px;
+        height: 50px;
+        font-size: 1.2rem;
+    }
+
+    .feature-card h4 {
+        font-size: 1rem;
+    }
+
+    .feature-card p {
+        font-size: 0.8rem;
+    }
+
+    .footer-text {
+        font-size: 0.8rem;
+    }
+}
+
