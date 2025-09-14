@@ -33,7 +33,6 @@ async function getInfo() {
 
       resultCard.innerHTML = `
         <div class="result-header">
-          <div class="result-avatar">OS</div>
           <div class="result-info">
             <h2>${person.name || "غير معروف"}</h2>
             <div class="result-phone">${nu}</div>
