@@ -1,9 +1,8 @@
-// getNumberInfo.js - Netlify Function
+// getNumberInfo.js
 export async function handler(event, context) {
   try {
     let number;
 
-    // جلب الرقم من الـ POST body
     if (event.httpMethod === 'POST') {
       try {
         const body = JSON.parse(event.body);
@@ -22,9 +21,7 @@ export async function handler(event, context) {
       };
     }
 
-    // رابط الـ API الأصلي (سيخفي عن المستخدم)
     const apiUrl = `https://ebnelnegm.com/HH/index.php?num=${encodeURIComponent(number)}`;
-    console.log('Fetching from API:', apiUrl);
 
     try {
       const response = await fetch(apiUrl, {
@@ -35,46 +32,29 @@ export async function handler(event, context) {
         }
       });
 
-      if (!response.ok) {
-        throw new Error(`API responded with status ${response.status}`);
-      }
-
-      const contentType = response.headers.get('content-type');
-      if (!contentType || !contentType.includes('application/json')) {
-        const textResponse = await response.text();
-        console.log('Non-JSON response received:', textResponse.substring(0, 200));
-        try {
-          const jsonData = JSON.parse(textResponse);
-          return {
-            statusCode: 200,
-            headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' },
-            body: JSON.stringify(jsonData)
-          };
-        } catch (parseError) {
-          throw new Error('Response is not valid JSON');
-        }
-      }
-
+      if (!response.ok) throw new Error(`API responded with status ${response.status}`);
       const data = await response.json();
 
       return {
         statusCode: 200,
-        headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' },
-        body: JSON.stringify(data)
+        headers: {
+          'Content-Type': 'application/json',
+          'Access-Control-Allow-Origin': '*'
+        },
+        body: JSON.stringify(data[0] || {}) // إرجاع العنصر الأول فقط
       };
 
     } catch (apiError) {
       console.error('API Error:', apiError.message);
 
-      // بيانات احتياطية لو API وقع
+      // بيانات احتياطية لو فشل الـ API
       const cleanNumber = number.replace(/\D/g, '');
       let carrier = "Vodafone EG";
-      if (cleanNumber.startsWith('010')) carrier = "Vodafone EG";
-      else if (cleanNumber.startsWith('011')) carrier = "Etisalat EG";
+      if (cleanNumber.startsWith('011')) carrier = "Etisalat EG";
       else if (cleanNumber.startsWith('012')) carrier = "Orange EG";
       else if (cleanNumber.startsWith('015')) carrier = "WE";
 
-      const type = cleanNumber.startsWith('01') ? "mobile" : "landline";
+      let type = cleanNumber.startsWith('01') ? "mobile" : "landline";
 
       const backupData = {
         number: number,
@@ -85,13 +65,17 @@ export async function handler(event, context) {
         type: type,
         location: "Cairo",
         internationalFormat: `+20${cleanNumber}`,
+        name: "غير معروف",
         message: "Data from API reserve",
         timestamp: new Date().toISOString()
       };
 
       return {
         statusCode: 200,
-        headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' },
+        headers: {
+          'Content-Type': 'application/json',
+          'Access-Control-Allow-Origin': '*'
+        },
         body: JSON.stringify(backupData)
       };
     }
