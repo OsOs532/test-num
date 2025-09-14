@@ -1,3 +1,4 @@
+// Get number info
 async function getInfo() {
   const nu = document.getElementById("phoneInput").value.trim();
   const resultCard = document.getElementById("resultCard");
@@ -11,6 +12,7 @@ async function getInfo() {
     return;
   }
 
+  // Show loading
   loading.style.display = "block";
   resultSection.style.display = "none";
   noResults.style.display = "none";
@@ -23,7 +25,7 @@ async function getInfo() {
 
     if (!res.ok) throw new Error("خطأ في الخادم");
 
-    const data = await res.json(); // 📌 السيرفر بيرجع Array
+    const data = await res.json(); // API بيرجع JSON Array
     loading.style.display = "none";
 
     if (Array.isArray(data) && data.length > 0) {
@@ -35,7 +37,7 @@ async function getInfo() {
           <div class="result-info">
             <h2>${person.name || "غير معروف"}</h2>
             <div class="result-phone">${nu}</div>
-            ${person.type ? `<div class="result-type">${person.type}</div>` : ""}
+            ${person.type ? `<div class="result-type">النوع: ${person.type}</div>` : ""}
           </div>
         </div>
       `;
@@ -49,5 +51,16 @@ async function getInfo() {
     noResults.style.display = "block";
   }
 
+  // امسح الحقل وارجع الـ focus عليه عشان تكتب رقم جديد
   document.getElementById("phoneInput").value = "";
+  document.getElementById("phoneInput").focus();
 }
+
+// ✅ Search button + Enter key
+document.addEventListener("DOMContentLoaded", function () {
+  document.getElementById("phoneInput").addEventListener("keypress", function (e) {
+    if (e.key === "Enter") getInfo();
+  });
+
+  document.getElementById("searchBtn").addEventListener("click", getInfo);
+});
