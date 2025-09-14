@@ -30,9 +30,11 @@ async function getInfo() {
 
     if (Array.isArray(data) && data.length > 0) {
       const person = data[0]; // أول عنصر
+      const initials = person.name ? person.name.substring(0, 2) : "--"; // أول حرفين من الاسم
 
       resultCard.innerHTML = `
         <div class="result-header">
+          <div class="result-avatar">${initials}</div>
           <div class="result-info">
             <h2>${person.name || "غير معروف"}</h2>
             <div class="result-phone">${nu}</div>
