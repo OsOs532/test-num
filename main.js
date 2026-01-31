@@ -1,17 +1,18 @@
-// main.js - Version مبسطة
 async function getInfo() {
-  const nu = document.getElementById("phoneInput").value.trim();
-  const resultCard = document.getElementById("resultCard");
+  const phoneInput = document.getElementById("phoneInput");
   const resultSection = document.getElementById("resultSection");
+  const resultCard = document.getElementById("resultCard");
   const loading = document.getElementById("loading");
   const noResults = document.getElementById("noResults");
 
+  const nu = phoneInput.value.trim();
+
   if (!nu) {
-    resultSection.style.display = "none";
-    noResults.style.display = "block";
+    alert("برجاء إدخال رقم هاتف");
     return;
   }
 
+  // إظهار اللودينج وإخفاء الباقي
   loading.style.display = "block";
   resultSection.style.display = "none";
   noResults.style.display = "none";
@@ -19,50 +20,54 @@ async function getInfo() {
   try {
     const res = await fetch("/.netlify/functions/getNumberInfo", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ number: nu })
     });
 
-    if (!res.ok) throw new Error("خطأ في الخادم");
-
-    const person = await res.json();
+    const data = await res.json();
     loading.style.display = "none";
 
-    // إعداد الأحرف الأولى من الاسم
-    let initials = "--";
-    if (person.name) {
-      const words = person.name.trim().split(" ");
-      initials = words[0].charAt(0).toUpperCase();
-      if (words.length > 1) initials += words[1].charAt(0).toUpperCase();
+    // معالجة البيانات (لو مصفوفة أو كائن)
+    const person = Array.isArray(data) ? data[0] : data;
+
+    // التأكد من وجود اسم في الرد
+    if (person && (person.name || person.FullName)) {
+      const name = person.name || person.FullName;
+      
+      // حساب الحروف الأولى للاسم
+      const initials = name.split(" ").map(n => n[0]).join("").toUpperCase().substring(0, 2);
+
+      resultCard.innerHTML = `
+        <div class="result-header">
+          <div class="result-avatar" style="background: #007bff; color: white; width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 24px; margin-bottom: 15px;">
+            ${initials}
+          </div>
+          <div class="result-info">
+            <h2 style="margin: 0; color: #333;">${name}</h2>
+            <p style="color: #666; font-size: 18px;">${person.number || nu}</p>
+          </div>
+        </div>
+      `;
+      resultSection.style.display = "block";
+    } else {
+      noResults.style.display = "block";
     }
 
-    // عرض الاسم والرقم فقط
-    resultCard.innerHTML = `
-      <div class="result-header">
-        <div class="result-avatar">${initials}</div>
-        <div class="result-info">
-          <h2>${person.name || "غير معروف"}</h2>
-          <div class="result-phone">${person.number || nu}</div>
-        </div>
-      </div>
-    `;
-
-    resultSection.style.display = "block";
-
   } catch (err) {
-    console.error(err);
+    console.error("Fetch error:", err);
     loading.style.display = "none";
     noResults.style.display = "block";
   }
-
-  document.getElementById("phoneInput").value = "";
-  document.getElementById("phoneInput").focus();
 }
 
-document.addEventListener("DOMContentLoaded", function () {
-  document.getElementById("phoneInput").addEventListener("keypress", function (e) {
+// ربط الزرار بالدالة
+document.addEventListener("DOMContentLoaded", () => {
+  const searchBtn = document.getElementById("searchBtn");
+  if (searchBtn) {
+    searchBtn.onclick = getInfo;
+  }
+
+  // البحث عند الضغط على Enter
+  document.getElementById("phoneInput").addEventListener("keypress", (e) => {
     if (e.key === "Enter") getInfo();
   });
-
-  document.getElementById("searchBtn").addEventListener("click", getInfo);
 });
