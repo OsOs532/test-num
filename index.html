@@ -3,73 +3,86 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Os Os Lookup | فحص الأرقام</title>
+    <title>Os Os Lookup | Number Scanner</title>
     <link rel="stylesheet" href="style.css">
     <link rel="icon" type="image/png" href="cover.png">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&family=Poppins:wght@600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;800&family=Poppins:wght@400;600&display=swap" rel="stylesheet">
 </head>
 <body>
+    <div class="background-circles">
+        <div class="circle c1"></div>
+        <div class="circle c2"></div>
+    </div>
+
     <div class="container">
         <header class="header">
-            <div class="logo">
-                <img src="Profile.jpg" alt="Logo" class="logo-icon">
-                <h1 class="logo-text">Os Os Lookup</h1>
+            <div class="logo-wrapper">
+                <img src="Profile.jpg" alt="Os Os" class="logo-icon">
+                <div class="logo-glow"></div>
             </div>
+            <h1 class="logo-text">Os Os Lookup</h1>
+            <p class="subtitle">Search Smarter, Not Harder</p>
         </header>
 
         <div class="search-section">
-            <div class="search-container">
-                <div class="phone-input-container">
-                    <span class="input-icon-prefix"><i class="fas fa-phone-alt"></i></span>
-                    <input type="tel" id="phoneInput" class="phone-input" placeholder="أدخل رقم الهاتف بدون رمز الدولة...">
+            <div class="glass-card search-card">
+                <div class="input-group">
+                    <div class="input-wrapper">
+                        <i class="fas fa-phone-alt input-icon"></i>
+                        <input type="tel" id="phoneInput" class="phone-input" placeholder="أدخل الرقم (مثلاً 010...)">
+                    </div>
                     <button class="search-btn" id="searchBtn">
                         <i class="fas fa-search"></i>
                         <span>Search</span>
                     </button>
                 </div>
-                <div class="input-hint"><i class="fas fa-shield-alt"></i> ابحث عن أي رقم في ثوانٍ بكل أمان</div>
+                <div class="hint-text">
+                    <i class="fas fa-shield-halved"></i>
+                    <span>بحث آمن ومشفر 100%</span>
+                </div>
             </div>
         </div>
 
         <div class="result-section" id="resultSection" style="display: none;">
-            <div class="result-card" id="resultCard"></div>
+            <div class="glass-card result-card" id="resultCard">
+                </div>
         </div>
 
         <div class="loading" id="loading" style="display: none;">
-            <div class="loading-spinner"></div>
-            <p>جاري فحص قاعدة البيانات...</p>
+            <div class="spinner"></div>
+            <p>جاري سحب البيانات...</p>
         </div>
 
         <div class="no-results" id="noResults" style="display: none;">
-            <div class="no-results-icon">❌</div>
-            <h3>لم يتم العثور على معلومات</h3>
-            <p>تأكد من كتابة الرقم بشكل صحيح (11 رقم)</p>
+            <div class="glass-card error-card">
+                <i class="fas fa-user-slash error-icon"></i>
+                <h3>غير مسجل لدينا</h3>
+                <p>تأكد من الرقم وحاول مرة أخرى</p>
+            </div>
         </div>
 
-        <div class="features-section">
-            <div class="features-grid">
-                <div class="feature-card">
-                    <div class="feature-icon"><i class="fas fa-bolt"></i></div>
-                    <h4>بحث سريع</h4>
-                    <p>نتائج فورية في ثوانٍ</p>
-                </div>
-                <div class="feature-card">
-                    <div class="feature-icon"><i class="fas fa-lock"></i></div>
-                    <h4>آمن ومحمي</h4>
-                    <p>خصوصيتك هي أولويتنا</p>
-                </div>
+        <div class="features-grid">
+            <div class="glass-card feature-item">
+                <i class="fas fa-bolt-lightning"></i>
+                <p>نتائج فورية</p>
+            </div>
+            <div class="glass-card feature-item">
+                <i class="fas fa-fingerprint"></i>
+                <p>خصوصية تامة</p>
             </div>
         </div>
     </div>
 
     <footer>
-        <div class="socials">
-            <a href="https://www.facebook.com/profile.php?id=100033771226713" target="_blank" class="social-icon facebook"><i class="fab fa-facebook-f"></i></a>
-            <a href="https://www.instagram.com/o_s_o_s_202" target="_blank" class="social-icon instagram"><i class="fab fa-instagram"></i></a>
+        <div class="social-links">
+            <a href="https://www.facebook.com/profile.php?id=100033771226713" target="_blank"><i class="fab fa-facebook-f"></i></a>
+            <a href="https://www.instagram.com/o_s_o_s_202" target="_blank"><i class="fab fa-instagram"></i></a>
+            <a href="https://www.linkedin.com/in/mohamed-osama202" target="_blank"><i class="fab fa-linkedin-in"></i></a>
         </div>
-        <div class="footer-text">All rights reserved © Mohamed Osama</div>
+        <p class="copyright">All Rights Reserved © 2026 Mohamed Osama</p>
     </footer>
+
     <script src="main.js"></script>
 </body>
 </html>
