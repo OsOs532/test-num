@@ -1,88 +1,112 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Os Os Lookup | Number Scanner</title>
-    <link rel="stylesheet" href="style.css">
-    <link rel="icon" type="image/png" href="cover.png">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;800&family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Os Os Lookup | فحص الأرقام</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="icon" type="image/png" href="cover.png">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&family=Poppins:wght@600&display=swap" rel="stylesheet">
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1719078086543598" crossorigin="anonymous"></script>
 </head>
 <body>
-    <div class="background-circles">
-        <div class="circle c1"></div>
-        <div class="circle c2"></div>
+  <div class="bg-blur-circle circle-1"></div>
+  <div class="bg-blur-circle circle-2"></div>
+
+  <div class="container">
+    <header class="header">
+      <div class="logo">
+        <div class="logo-inner">
+          <img src="Profile.jpg" alt="Logo" class="logo-icon">
+        </div>
+        <h1 class="logo-text">Os Os Lookup</h1>
+      </div>
+    </header>
+
+    <div class="search-section">
+      <div class="search-container">
+        <div class="phone-input-container">
+          <div class="input-with-icon">
+            <i class="fas fa-phone-alt"></i>
+            <input 
+              type="tel" 
+              id="phoneInput" 
+              class="phone-input" 
+              placeholder=" ...أدخل رقم الهاتف"
+            >
+          </div>
+          <button class="search-btn" id="searchBtn">
+            <span class="search-icon"><i class="fas fa-search"></i></span>
+            <span class="search-text">Search</span>
+          </button>
+        </div>
+        <div class="input-hint">
+          <i class="fas fa-info-circle"></i> ادخل الرقم بدون رمز الدولة (●'◡'●)
+        </div>
+      </div>
     </div>
 
-    <div class="container">
-        <header class="header">
-            <div class="logo-wrapper">
-                <img src="Profile.jpg" alt="Os Os" class="logo-icon">
-                <div class="logo-glow"></div>
-            </div>
-            <h1 class="logo-text">Os Os Lookup</h1>
-            <p class="subtitle">Search Smarter, Not Harder</p>
-        </header>
-
-        <div class="search-section">
-            <div class="glass-card search-card">
-                <div class="input-group">
-                    <div class="input-wrapper">
-                        <i class="fas fa-phone-alt input-icon"></i>
-                        <input type="tel" id="phoneInput" class="phone-input" placeholder="أدخل الرقم (مثلاً 010...)">
-                    </div>
-                    <button class="search-btn" id="searchBtn">
-                        <i class="fas fa-search"></i>
-                        <span>Search</span>
-                    </button>
-                </div>
-                <div class="hint-text">
-                    <i class="fas fa-shield-halved"></i>
-                    <span>بحث آمن ومشفر 100%</span>
-                </div>
-            </div>
-        </div>
-
-        <div class="result-section" id="resultSection" style="display: none;">
-            <div class="glass-card result-card" id="resultCard">
-                </div>
-        </div>
-
-        <div class="loading" id="loading" style="display: none;">
-            <div class="spinner"></div>
-            <p>جاري سحب البيانات...</p>
-        </div>
-
-        <div class="no-results" id="noResults" style="display: none;">
-            <div class="glass-card error-card">
-                <i class="fas fa-user-slash error-icon"></i>
-                <h3>غير مسجل لدينا</h3>
-                <p>تأكد من الرقم وحاول مرة أخرى</p>
-            </div>
-        </div>
-
-        <div class="features-grid">
-            <div class="glass-card feature-item">
-                <i class="fas fa-bolt-lightning"></i>
-                <p>نتائج فورية</p>
-            </div>
-            <div class="glass-card feature-item">
-                <i class="fas fa-fingerprint"></i>
-                <p>خصوصية تامة</p>
-            </div>
-        </div>
+    <div class="result-section" id="resultSection" style="display: none;">
+      <div class="result-card" id="resultCard"></div>
     </div>
 
-    <footer>
-        <div class="social-links">
-            <a href="https://www.facebook.com/profile.php?id=100033771226713" target="_blank"><i class="fab fa-facebook-f"></i></a>
-            <a href="https://www.instagram.com/o_s_o_s_202" target="_blank"><i class="fab fa-instagram"></i></a>
-            <a href="https://www.linkedin.com/in/mohamed-osama202" target="_blank"><i class="fab fa-linkedin-in"></i></a>
-        </div>
-        <p class="copyright">All Rights Reserved © 2026 Mohamed Osama</p>
-    </footer>
+    <div class="loading" id="loading" style="display: none;">
+      <div class="loading-spinner"></div>
+      <p>جاري البحث عن صاحب الرقم...</p>
+    </div>
 
-    <script src="main.js"></script>
+    <div class="no-results" id="noResults" style="display: none;">
+      <div class="no-results-card">
+        <div class="no-results-icon">❌</div>
+        <h3>لم يتم العثور على معلومات</h3>
+        <p>عذراً، لم نتمكن من العثور على معلومات لهذا الرقم</p>
+        <div class="suggestions">
+          <h4>تأكد من:</h4>
+          <ul>
+            <li> كتابة الرقم بشكل صحيح بدون رمز الدولة</li>
+            <li>عدم وجود مسافات أو رموز إضافية</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="features-section">
+      <h3 class="features-title">مميزات الخدمة</h3>
+      <div class="features-grid">
+        <div class="feature-card">
+          <div class="feature-icon"><i class="fas fa-bolt"></i></div>
+          <h4>بحث سريع</h4>
+          <p>نتائج فورية في ثوانٍ معدودة</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon"><i class="fas fa-user-shield"></i></div>
+          <h4>آمن ومحمي</h4>
+          <p>حماية كاملة لخصوصيتك</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon"><i class="fas fa-database"></i></div>
+          <h4>قاعدة بيانات كبيرة</h4>
+          <p>ملايين الأرقام المسجلة</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <div class="socials">
+      <a href="https://www.facebook.com/profile.php?id=100033771226713" target="_blank" class="social-icon facebook">
+        <i class="fab fa-facebook-f"></i><span>Facebook</span>
+      </a>
+      <a href="https://www.instagram.com/o_s_o_s_202" target="_blank" class="social-icon instagram">
+        <i class="fab fa-instagram"></i><span>Instagram</span>
+      </a>
+      <a href="https://www.linkedin.com/in/mohamed-osama202" target="_blank" class="social-icon linkedin">
+        <i class="fab fa-linkedin-in"></i><span>LinkedIn</span>
+      </a>
+    </div>
+    <div class="footer-text">All rights reserved © 2026 Mohamed Osama</div>
+  </footer>
+  <script src="main.js"></script>
 </body>
 </html>
