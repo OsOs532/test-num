@@ -8,6 +8,7 @@ async function getInfo() {
     const nu = phoneInput.value.trim();
     if (!nu) return;
 
+    // تجهيز الواجهة
     loading.style.display = "block";
     resultSection.style.display = "none";
     noResults.style.display = "none";
@@ -21,31 +22,47 @@ async function getInfo() {
         const data = await res.json();
         loading.style.display = "none";
 
+        // التعامل مع المصفوفة أو الكائن
         const person = Array.isArray(data) ? data[0] : data;
+        
+        // البحث عن الاسم في كل الحقول الممكنة
         const name = person?.name || person?.FullName || person?.contact_name;
 
         if (name && name.trim() !== "") {
-            const initials = name.split(" ").map(n => n[0]).join("").toUpperCase().substring(0, 2);
+            // حساب الـ Initials (أول حرف من أول اسم وآخر اسم)
+            const parts = name.trim().split(/\s+/);
+            let initials = parts[0].charAt(0).toUpperCase();
+            if (parts.length > 1) initials += parts[parts.length - 1].charAt(0).toUpperCase();
 
             resultCard.innerHTML = `
-                <div class="result-header" style="text-align: center; display: flex; flex-direction: column; align-items: center;">
+                <div class="result-header">
                     <div class="result-avatar">${initials}</div>
-                    <h2 style="margin: 10px 0; color: #1e293b;">${name}</h2>
-                    <p style="color: var(--primary-color); font-weight: bold; font-size: 1.2rem;">${person.number || nu}</p>
+                    <div class="result-info">
+                        <h2>${name}</h2>
+                        <div class="result-phone">${person.number || nu}</div>
+                    </div>
                 </div>
             `;
             resultSection.style.display = "block";
-            resultCard.animate([{ opacity: 0, transform: 'translateY(20px)' }, { opacity: 1, transform: 'translateY(0)' }], { duration: 500 });
         } else {
             noResults.style.display = "block";
         }
+
     } catch (err) {
+        console.error("Error:", err);
         loading.style.display = "none";
         noResults.style.display = "block";
     }
+
+    phoneInput.value = "";
 }
 
+// تشغيل الزرار والإنتر
 document.addEventListener("DOMContentLoaded", () => {
-    document.getElementById("searchBtn").onclick = getInfo;
-    document.getElementById("phoneInput").onkeypress = (e) => { if (e.key === "Enter") getInfo(); };
+    const btn = document.getElementById("searchBtn");
+    if (btn) btn.onclick = getInfo;
+
+    document.getElementById("phoneInput").addEventListener("keypress", (e) => {
+        if (e.key === "Enter") getInfo();
+    });
 });
