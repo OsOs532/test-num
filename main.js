@@ -8,11 +8,10 @@ async function getInfo() {
   const nu = phoneInput.value.trim();
 
   if (!nu) {
-    alert("برجاء إدخال رقم هاتف");
+    alert("دخل الرقم يا هندسة!");
     return;
   }
 
-  // إظهار اللودينج وإخفاء الباقي
   loading.style.display = "block";
   resultSection.style.display = "none";
   noResults.style.display = "none";
@@ -26,47 +25,50 @@ async function getInfo() {
     const data = await res.json();
     loading.style.display = "none";
 
-    // معالجة البيانات (لو مصفوفة أو كائن)
+    // 1. استخراج الكائن (سواء مصفوفة أو كائن مباشر)
     const person = Array.isArray(data) ? data[0] : data;
 
-    // التأكد من وجود اسم في الرد
-    if (person && (person.name || person.FullName)) {
-      const name = person.name || person.FullName;
-      
-      // حساب الحروف الأولى للاسم
-      const initials = name.split(" ").map(n => n[0]).join("").toUpperCase().substring(0, 2);
+    // 2. تفتيش عن الاسم في كل الحقول الممكنة (عشان نضمن ميبقاش "غير معروف")
+    // جربنا هنا: name و FullName و contact_name
+    const name = person?.name || person?.FullName || person?.contact_name || "";
+
+    if (name && name.trim() !== "") {
+      // حساب الحروف الأولى للاسم بشكل احترافي
+      const nameParts = name.trim().split(/\s+/);
+      let initials = nameParts[0].charAt(0).toUpperCase();
+      if (nameParts.length > 1) {
+        initials += nameParts[nameParts.length - 1].charAt(0).toUpperCase();
+      }
 
       resultCard.innerHTML = `
         <div class="result-header">
-          <div class="result-avatar" style="background: #007bff; color: white; width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 24px; margin-bottom: 15px;">
-            ${initials}
-          </div>
+          <div class="result-avatar">${initials}</div>
           <div class="result-info">
-            <h2 style="margin: 0; color: #333;">${name}</h2>
-            <p style="color: #666; font-size: 18px;">${person.number || nu}</p>
+            <h2>${name}</h2>
+            <p class="result-phone">${person.number || nu}</p>
           </div>
         </div>
       `;
       resultSection.style.display = "block";
     } else {
+      // لو الاسم فعلاً مش موجود في الـ API خالص
       noResults.style.display = "block";
     }
 
   } catch (err) {
-    console.error("Fetch error:", err);
+    console.error("Error:", err);
     loading.style.display = "none";
     noResults.style.display = "block";
   }
+
+  phoneInput.value = "";
 }
 
-// ربط الزرار بالدالة
+// ربط الأحداث
 document.addEventListener("DOMContentLoaded", () => {
-  const searchBtn = document.getElementById("searchBtn");
-  if (searchBtn) {
-    searchBtn.onclick = getInfo;
-  }
+  const btn = document.getElementById("searchBtn");
+  if (btn) btn.onclick = getInfo;
 
-  // البحث عند الضغط على Enter
   document.getElementById("phoneInput").addEventListener("keypress", (e) => {
     if (e.key === "Enter") getInfo();
   });
