@@ -1,75 +1,51 @@
 async function getInfo() {
-  const phoneInput = document.getElementById("phoneInput");
-  const resultSection = document.getElementById("resultSection");
-  const resultCard = document.getElementById("resultCard");
-  const loading = document.getElementById("loading");
-  const noResults = document.getElementById("noResults");
+    const phoneInput = document.getElementById("phoneInput");
+    const resultSection = document.getElementById("resultSection");
+    const resultCard = document.getElementById("resultCard");
+    const loading = document.getElementById("loading");
+    const noResults = document.getElementById("noResults");
 
-  const nu = phoneInput.value.trim();
+    const nu = phoneInput.value.trim();
+    if (!nu) return;
 
-  if (!nu) {
-    alert("دخل الرقم يا هندسة!");
-    return;
-  }
+    loading.style.display = "block";
+    resultSection.style.display = "none";
+    noResults.style.display = "none";
 
-  loading.style.display = "block";
-  resultSection.style.display = "none";
-  noResults.style.display = "none";
+    try {
+        const res = await fetch("/.netlify/functions/getNumberInfo", {
+            method: "POST",
+            body: JSON.stringify({ number: nu })
+        });
 
-  try {
-    const res = await fetch("/.netlify/functions/getNumberInfo", {
-      method: "POST",
-      body: JSON.stringify({ number: nu })
-    });
+        const data = await res.json();
+        loading.style.display = "none";
 
-    const data = await res.json();
-    loading.style.display = "none";
+        const person = Array.isArray(data) ? data[0] : data;
+        const name = person?.name || person?.FullName || person?.contact_name;
 
-    // 1. استخراج الكائن (سواء مصفوفة أو كائن مباشر)
-    const person = Array.isArray(data) ? data[0] : data;
+        if (name && name.trim() !== "") {
+            const initials = name.split(" ").map(n => n[0]).join("").toUpperCase().substring(0, 2);
 
-    // 2. تفتيش عن الاسم في كل الحقول الممكنة (عشان نضمن ميبقاش "غير معروف")
-    // جربنا هنا: name و FullName و contact_name
-    const name = person?.name || person?.FullName || person?.contact_name || "";
-
-    if (name && name.trim() !== "") {
-      // حساب الحروف الأولى للاسم بشكل احترافي
-      const nameParts = name.trim().split(/\s+/);
-      let initials = nameParts[0].charAt(0).toUpperCase();
-      if (nameParts.length > 1) {
-        initials += nameParts[nameParts.length - 1].charAt(0).toUpperCase();
-      }
-
-      resultCard.innerHTML = `
-        <div class="result-header">
-          <div class="result-avatar">${initials}</div>
-          <div class="result-info">
-            <h2>${name}</h2>
-            <p class="result-phone">${person.number || nu}</p>
-          </div>
-        </div>
-      `;
-      resultSection.style.display = "block";
-    } else {
-      // لو الاسم فعلاً مش موجود في الـ API خالص
-      noResults.style.display = "block";
+            resultCard.innerHTML = `
+                <div class="result-header" style="text-align: center; display: flex; flex-direction: column; align-items: center;">
+                    <div class="result-avatar">${initials}</div>
+                    <h2 style="margin: 10px 0; color: #1e293b;">${name}</h2>
+                    <p style="color: var(--primary-color); font-weight: bold; font-size: 1.2rem;">${person.number || nu}</p>
+                </div>
+            `;
+            resultSection.style.display = "block";
+            resultCard.animate([{ opacity: 0, transform: 'translateY(20px)' }, { opacity: 1, transform: 'translateY(0)' }], { duration: 500 });
+        } else {
+            noResults.style.display = "block";
+        }
+    } catch (err) {
+        loading.style.display = "none";
+        noResults.style.display = "block";
     }
-
-  } catch (err) {
-    console.error("Error:", err);
-    loading.style.display = "none";
-    noResults.style.display = "block";
-  }
-
-  phoneInput.value = "";
 }
 
-// ربط الأحداث
 document.addEventListener("DOMContentLoaded", () => {
-  const btn = document.getElementById("searchBtn");
-  if (btn) btn.onclick = getInfo;
-
-  document.getElementById("phoneInput").addEventListener("keypress", (e) => {
-    if (e.key === "Enter") getInfo();
-  });
+    document.getElementById("searchBtn").onclick = getInfo;
+    document.getElementById("phoneInput").onkeypress = (e) => { if (e.key === "Enter") getInfo(); };
 });
