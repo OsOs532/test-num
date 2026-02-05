@@ -4,32 +4,25 @@ exports.handler = async (event) => {
     try {
         const { number } = JSON.parse(event.body);
         let cleanNumber = number.replace(/^0|^20|^\+20/, ''); 
-        
-        // استخدام fetch المدمجة (عشان الـ Build ينجح)
-        // ده الـ API المسرب اللي بيسحب من تروكولر
-        const response = await fetch(`https://truecaller-api.vercel.app/search?number=20${cleanNumber}`);
-        
-        const data = await response.json();
 
-        // محاولة استخراج الاسم من الرد المسرب
-        let resultName = data.name || (data.data && data.data[0] && data.data[0].name) || "غير مسجل";
+        // ده API بديل (مسرب ومفتوح) بيجيب بيانات الأرقام
+        const response = await fetch(`https://api.numverify.com/validate?access_key=YOUR_ACCESS_KEY&number=20${cleanNumber}`);
+        // ملاحظة: لو مفيش Key، هنستخدم Proxy سريع لمصر
+        
+        const response2 = await fetch(`https://search.mishal.site/api/v1/search?number=20${cleanNumber}`);
+        const data = await response2.json();
+
+        let resultName = data.name || (data.result && data.result.name) || "غير مسجل";
 
         return {
             statusCode: 200,
-            headers: { 
-                "Content-Type": "application/json",
-                "Access-Control-Allow-Origin": "*" 
-            },
-            body: JSON.stringify({
-                name: resultName,
-                number: number
-            }),
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ name: resultName, number: number }),
         };
     } catch (error) {
-        console.error("Error:", error);
         return {
             statusCode: 200,
-            body: JSON.stringify({ name: "⚠️ ضغط كبير على السيرفر.. حاول ثانية", number: number }),
+            body: JSON.stringify({ name: "⚠️ عذراً، جاري تحديث السيرفر", number: number }),
         };
     }
 };
