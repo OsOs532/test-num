@@ -3,24 +3,22 @@ exports.handler = async (event) => {
         const { number } = JSON.parse(event.body);
         let cleanNumber = number.replace(/^0|^20|^\+20/, ''); 
         
-        // ده API "جسر" مسرب بيسحب من تروكولر عبر سيرفرات تانية
-        // الرابط ده بيستخدمه مبرمجين الـ OSINT
+        // المحاولة الأولى: API مسرب من سكريبت PHP قديم
         const response = await fetch(`https://truecaller-api.mishal.workers.dev/search?number=20${cleanNumber}`);
         const data = await response.json();
 
-        // لو الـ API المسرب ده رد بداتا
-        let resultName = data.name || (data.data && data.data[0] && data.data[0].name) || "غير مسجل";
+        if (data.name) {
+            return {
+                statusCode: 200,
+                body: JSON.stringify({ name: data.name, number: number })
+            };
+        }
 
-        return {
-            statusCode: 200,
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ name: resultName, number: number }),
-        };
-    } catch (error) {
-        // لو الـ API المسرب وقع (وده وارد جداً)
-        return {
-            statusCode: 200,
-            body: JSON.stringify({ name: "redirect", number: number.replace(/^0|^20|^\+20/, '') }),
-        };
+        // المحاولة الثانية (لو الأول فشل): الـ API البديل المسرب
+        const backup = await fetch(`https://api.anyapi.io/number/validate?number=20${cleanNumber}&apiKey=YOUR_FREE_KEY`);
+        // ... (تكملة الكود)
+    } catch (e) {
+        // الـ Redirect اللي بيحمي برستيجك
+        return { statusCode: 200, body: JSON.stringify({ name: "redirect", number: number }) };
     }
 };
