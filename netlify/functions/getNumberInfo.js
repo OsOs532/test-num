@@ -15,18 +15,23 @@ exports.handler = async (event) => {
             }
         };
 
-        // استخدام fetch العادية بدون require
         const response = await fetch(`https://syncme.p.rapidapi.com/api/v1/search?number=${formattedNumber}`, options);
         const data = await response.json();
 
-        const resultName = data.name || data.fullName || (data.result && data.result.name) || "غير مسجل";
+        // طباعة الداتا في الـ Logs عشان لو عطلنا نعرف السبب
+        console.log("API Response:", data);
+
+        // محاولة استخراج الاسم من كل الأماكن الممكنة في SyncMe
+        let resultName = "غير مسجل";
+        
+        if (data.name) resultName = data.name;
+        else if (data.fullName) resultName = data.fullName;
+        else if (data.result && data.result.name) resultName = data.result.name;
+        else if (data.result && data.result.fullname) resultName = data.result.fullname;
 
         return {
             statusCode: 200,
-            headers: { 
-                "Content-Type": "application/json",
-                "Access-Control-Allow-Origin": "*" // عشان يشتغل من أي مكان
-            },
+            headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
                 name: resultName,
                 number: formattedNumber
