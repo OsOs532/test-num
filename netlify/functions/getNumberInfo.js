@@ -1,34 +1,29 @@
 exports.handler = async (event) => {
-    if (event.httpMethod !== "POST") {
-        return { statusCode: 405, body: "Method Not Allowed" };
-    }
+    if (event.httpMethod !== "POST") return { statusCode: 405 };
 
     try {
         const { number } = JSON.parse(event.body);
         
-        // تنظيف الرقم: بنشيل الـ 0 اللي في الأول أو الـ +20 لو موجودة
-        // عشان نبعت الرقم لوحده وكود الدولة لوحده زي ما الصورة طالبة
-        let cleanNumber = number.replace(/^\+20|^20|^0/, ''); 
-        let countryCode = "20"; // لمصر
+        // تنظيف الرقم: بنشيل الصفر أو الـ 20 من الأول عشان نبعته "صافي"
+        let cleanNumber = number.replace(/^0|^20|^\+20/, ''); 
+        
+        // Eyecon بيحتاج الرقم بكود الدولة بدون علامة + (لمصر 20)
+        const fullNumber = "20" + cleanNumber;
 
         const options = {
             method: 'GET',
             headers: {
                 'x-rapidapi-key': '3a745ccb10msh93d34609a092a15p10c4bbjsnf0e891e5d920',
-                'x-rapidapi-host': 'syncme.p.rapidapi.com'
+                'x-rapidapi-host': 'caller-id-social-search-eyecon.p.rapidapi.com'
             }
         };
 
-        // الربط الجديد باستخدام المفتاحين number و code
-        const response = await fetch(`https://syncme.p.rapidapi.com/api/v1/search?number=${cleanNumber}&code=${countryCode}`, options);
+        // طلب البيانات من Eyecon (استخدام الـ Endpoint الصح)
+        const response = await fetch(`https://caller-id-social-search-eyecon.p.rapidapi.com/get_info?number=${fullNumber}`, options);
         const data = await response.json();
 
-        console.log("API Result:", data);
-
-        // محاولة استخراج الاسم بناءً على رد SyncMe
-        let resultName = "غير مسجل";
-        if (data.name) resultName = data.name;
-        else if (data.result && data.result.name) resultName = data.result.name;
+        // Eyecon بيرجع الاسم في خانة اسمها name
+        let resultName = data.name || "غير مسجل في قاعدة البيانات";
 
         return {
             statusCode: 200,
@@ -41,7 +36,7 @@ exports.handler = async (event) => {
     } catch (error) {
         return {
             statusCode: 500,
-            body: JSON.stringify({ error: "Server Error" }),
+            body: JSON.stringify({ error: "خطأ في الاتصال بالسيرفر" }),
         };
     }
 };
