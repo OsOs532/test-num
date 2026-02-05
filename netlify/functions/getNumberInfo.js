@@ -1,15 +1,9 @@
 exports.handler = async (event) => {
-    if (event.httpMethod !== "POST") return { statusCode: 405 };
-
     try {
         const { number } = JSON.parse(event.body);
-        
-        // تنظيف الرقم: بنشيل الصفر أو الـ 20 من الأول عشان نبعته "صافي"
+        // تنظيف الرقم (بنشيل الصفر)
         let cleanNumber = number.replace(/^0|^20|^\+20/, ''); 
         
-        // Eyecon بيحتاج الرقم بكود الدولة بدون علامة + (لمصر 20)
-        const fullNumber = "20" + cleanNumber;
-
         const options = {
             method: 'GET',
             headers: {
@@ -18,25 +12,22 @@ exports.handler = async (event) => {
             }
         };
 
-        // طلب البيانات من Eyecon (استخدام الـ Endpoint الصح)
+        // جربنا نبعت الرقم بكود الدولة +20
         const response = await fetch(`https://caller-id-social-search-eyecon.p.rapidapi.com/get_info?number=%2B20${cleanNumber}`, options);
         const data = await response.json();
 
-        // Eyecon بيرجع الاسم في خانة اسمها name
-        let resultName = data.name || "غير مسجل في قاعدة البيانات";
+        // السطر ده هيخلينا نعرف الـ API باعت إيه بالظبط في الـ Logs
+        console.log("Full API Response:", data);
+
+        // محاولة ذكية لاستخراج أي اسم موجود
+        let resultName = data.name || data.fullName || (data.data && data.data.name) || "غير مسجل";
 
         return {
             statusCode: 200,
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-                name: resultName,
-                number: number
-            }),
+            body: JSON.stringify({ name: resultName, number: number }),
         };
     } catch (error) {
-        return {
-            statusCode: 500,
-            body: JSON.stringify({ error: "خطأ في الاتصال بالسيرفر" }),
-        };
+        return { statusCode: 200, body: JSON.stringify({ name: "خطأ في الاتصال", number: "" }) };
     }
 };
