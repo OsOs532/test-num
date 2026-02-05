@@ -19,7 +19,7 @@ exports.handler = async (event) => {
         };
 
         // طلب البيانات من Eyecon (استخدام الـ Endpoint الصح)
-        const response = await fetch(`https://caller-id-social-search-eyecon.p.rapidapi.com/get_info?number=${fullNumber}`, options);
+        const response = await fetch(`https://caller-id-social-search-eyecon.p.rapidapi.com/get_info?number=%2B20${cleanNumber}`, options);
         const data = await response.json();
 
         // Eyecon بيرجع الاسم في خانة اسمها name
