@@ -1,49 +1,48 @@
-const https = require('https');
+const fetch = require('node-fetch');
 
 exports.handler = async (event) => {
-    // 1. استلام الرقم من الفرونت إند
-    let number;
+    // 1. التأكد إن الطلب جاي من الموقع بطريقة صحيحة
+    if (event.httpMethod !== "POST") {
+        return { statusCode: 405, body: "Method Not Allowed" };
+    }
+
     try {
-        const body = JSON.parse(event.body || "{}");
-        number = body.number;
-    } catch (e) {
-        return { statusCode: 400, body: JSON.stringify({ error: "Invalid JSON" }) };
-    }
+        const { number } = JSON.parse(event.body);
+        
+        // 2. تنظيف الرقم وتجهيزه بصيغة دولية لمصر (20)
+        // لو الرقم بيبدأ بـ 0، بنشيل الصفر ونحط 20
+        const formattedNumber = number.startsWith('20') ? number : '20' + number.replace(/^0+/, '');
 
-    if (!number) {
-        return { statusCode: 400, body: JSON.stringify({ error: "Number is required" }) };
-    }
-
-    // 2. رابط الـ API اللي شغال عليه موقعك الأصلي
-    const apiUrl = `https://ebnelnegm.com/XX/index.php?num=${encodeURIComponent(number)}`;
-
-    // 3. طلب البيانات باستخدام https (بدون مكتبات خارجية)
-    return new Promise((resolve) => {
+        // 3. إعدادات الـ API الجديد (SyncMe) من الصورة اللي بعتها
         const options = {
+            method: 'GET',
             headers: {
-                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
-                'Referer': 'https://ebnelnegm.com/'
+                'x-rapidapi-key': '3a745ccb10msh93d34609a092a15p10c4bbjsnf0e891e5d920',
+                'x-rapidapi-host': 'syncme.p.rapidapi.com'
             }
         };
 
-        https.get(apiUrl, options, (res) => {
-            let rawData = '';
-            res.on('data', (chunk) => { rawData += chunk; });
-            res.on('end', () => {
-                resolve({
-                    statusCode: 200,
-                    headers: { 
-                        "Content-Type": "application/json", 
-                        "Access-Control-Allow-Origin": "*" 
-                    },
-                    body: rawData // بنبعت البيانات زي ما جت
-                });
-            });
-        }).on('error', (e) => {
-            resolve({
-                statusCode: 500,
-                body: JSON.stringify({ error: e.message })
-            });
-        });
-    });
+        // 4. الاتصال بالـ API
+        const response = await fetch(`https://syncme.p.rapidapi.com/api/v1/search?number=${formattedNumber}`, options);
+        const data = await response.json();
+
+        // 5. استخراج الاسم من رد الـ API وتجهيزه للموقع
+        // الـ API بتاع SyncMe غالباً بيرجع الاسم في خانة name أو fullName
+        const resultName = data.name || data.fullName || (data.result && data.result.name) || "غير مسجل";
+
+        return {
+            statusCode: 200,
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                name: resultName,
+                number: formattedNumber
+            }),
+        };
+    } catch (error) {
+        console.error("Error:", error);
+        return {
+            statusCode: 500,
+            body: JSON.stringify({ error: "فشل في جلب البيانات من السيرفر" }),
+        };
+    }
 };
