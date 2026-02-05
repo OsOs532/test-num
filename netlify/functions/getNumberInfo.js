@@ -5,7 +5,11 @@ exports.handler = async (event) => {
 
     try {
         const { number } = JSON.parse(event.body);
-        const formattedNumber = number.startsWith('20') ? number : '20' + number.replace(/^0+/, '');
+        
+        // تنظيف الرقم: بنشيل الـ 0 اللي في الأول أو الـ +20 لو موجودة
+        // عشان نبعت الرقم لوحده وكود الدولة لوحده زي ما الصورة طالبة
+        let cleanNumber = number.replace(/^\+20|^20|^0/, ''); 
+        let countryCode = "20"; // لمصر
 
         const options = {
             method: 'GET',
@@ -15,26 +19,23 @@ exports.handler = async (event) => {
             }
         };
 
-        const response = await fetch(`https://syncme.p.rapidapi.com/api/v1/search?number=${formattedNumber}`, options);
+        // الربط الجديد باستخدام المفتاحين number و code
+        const response = await fetch(`https://syncme.p.rapidapi.com/api/v1/search?number=${cleanNumber}&code=${countryCode}`, options);
         const data = await response.json();
 
-        // طباعة الداتا في الـ Logs عشان لو عطلنا نعرف السبب
-        console.log("API Response:", data);
+        console.log("API Result:", data);
 
-        // محاولة استخراج الاسم من كل الأماكن الممكنة في SyncMe
+        // محاولة استخراج الاسم بناءً على رد SyncMe
         let resultName = "غير مسجل";
-        
         if (data.name) resultName = data.name;
-        else if (data.fullName) resultName = data.fullName;
         else if (data.result && data.result.name) resultName = data.result.name;
-        else if (data.result && data.result.fullname) resultName = data.result.fullname;
 
         return {
             statusCode: 200,
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
                 name: resultName,
-                number: formattedNumber
+                number: number
             }),
         };
     } catch (error) {
