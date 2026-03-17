@@ -1,6 +1,7 @@
 const https = require('https');
 
 exports.handler = async (event) => {
+    // 1. استلام الرقم من الفرونت إند
     let number;
     try {
         const body = JSON.parse(event.body || "{}");
@@ -13,20 +14,26 @@ exports.handler = async (event) => {
         return { statusCode: 400, body: JSON.stringify({ error: "Number is required" }) };
     }
 
-    // 1. رابط ابن النجم الأصلي
-    const targetUrl = `https://ebnelnegm.com/XX/index.php?num=${encodeURIComponent(number)}`;
-    
-    // 2. رابط الكوبري (Proxy) اللي هيخفي الـ IP بتاع Netlify
-    const proxyUrl = `https://corsproxy.io/?${encodeURIComponent(targetUrl)}`;
+    // 🚀 التعديل السحري هنا: غيرنا المسار لـ HH زي ما اكتشفنا في السورس كود بتاعهم
+    const apiUrl = `https://ebnelnegm.com/HH/index.php?num=${encodeURIComponent(number)}`;
 
+    // 3. طلب البيانات مع تمويه كامل للسيرفر
     return new Promise((resolve) => {
         const options = {
             headers: {
-                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36'
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36',
+                'Accept': 'application/json, text/javascript, */*; q=0.01',
+                'Accept-Language': 'ar,en-US;q=0.9,en;q=0.8',
+                'Referer': 'https://ebnelnegm.com/',
+                'Origin': 'https://ebnelnegm.com',
+                'Connection': 'keep-alive',
+                'Sec-Fetch-Dest': 'empty',
+                'Sec-Fetch-Mode': 'cors',
+                'Sec-Fetch-Site': 'same-origin'
             }
         };
 
-        https.get(proxyUrl, options, (res) => {
+        https.get(apiUrl, options, (res) => {
             let rawData = '';
             res.on('data', (chunk) => { rawData += chunk; });
             res.on('end', () => {
